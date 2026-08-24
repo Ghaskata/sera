@@ -22,7 +22,7 @@ Positioning reference points: Microsoft Copilot, Google Gemini Workspace, Glean,
 
 Today a user's information is scattered across many disconnected tools:
 
-- Slack, Gmail, Google Drive, Notion, meeting recordings, documents, GitHub, Zoom/Teams, Calendar, ChatGPT / Claude / Gemini history, Google Notes.
+- Slack, Gmail, Google Drive, Notion, meeting recordings, documents, GitHub, Zoom/Teams/google meet, Calendar, ChatGPT / Claude / Gemini history, Google Notes.
 
 This leads to lost context and repeated questions such as:
 - What was decided in yesterday's meeting?
