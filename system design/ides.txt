@@ -1,0 +1,10 @@
+dekho me mere local me ollama ki wajah me koi screit run kr skti hu??
+kyonki mere system me only google login hi honga to jab google se login kre then useke drive me hi ollama ka storage hoo
+jisse hmare backend me load nhi aayenga and memorry ka issue bhi nhi aayenga also user ki privacy bhi rhengii
+and also drive me per person 15 GB datat rhta haiii..
+also sb ka personal datat bhi save honga to hmara contex window bhi badh jayenga
+
+
+-----------------
+
+

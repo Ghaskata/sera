@@ -1,0 +1,42 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sera}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sera}
+      POSTGRES_DB: ${POSTGRES_DB:-sera}
+    volumes:
+      - sera_pgdata:/var/lib/postgresql/data
+    networks:
+      - sera-net
+
+  backend:
+    build: .
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-sera}:${POSTGRES_PASSWORD:-sera}@db:5432/${POSTGRES_DB:-sera}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_OAUTH_REDIRECT_URI=${GOOGLE_OAUTH_REDIRECT_URI}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
+      - GEMINI_EMBED_MODEL=${GEMINI_EMBED_MODEL:-text-embedding-004}
+      - TOKEN_ENCRYPTION_KEY=${TOKEN_ENCRYPTION_KEY}
+      - DRIVE_SYNC_INTERVAL_MINUTES=${DRIVE_SYNC_INTERVAL_MINUTES:-15}
+      - RAG_MIN_SIMILARITY=${RAG_MIN_SIMILARITY:-0.55}
+      - RAG_TOP_K=${RAG_TOP_K:-5}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - sera-net
+
+volumes:
+  sera_pgdata:
+
+networks:
+  sera-net:
+    driver: bridge
