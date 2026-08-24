@@ -1,0 +1,933 @@
+Your idea is actually bigger than a RAG chatbot. What you're describing is an AI Operating System for Knowledge Work—a platform where users connect all of their digital tools, and the AI becomes an intelligent assistant that understands, searches, organises, and acts on their personal data.
+
+Think of it like this:
+
+Google Drive stores files.
+
+Slack stores conversations.
+
+Gmail stores emails.
+
+ChatGPT answers questions.
+
+Your product combines them into one intelligent workspace.
+
+This is a project that demonstrates nearly every major AI engineering skill: connectors, authentication, RAG, vector search, agent workflows, memory, permissions, indexing, and production architecture.
+
+The Vision
+Imagine a user signs up.
+
+Instead of uploading PDFs, they connect all their tools.
+
++----------------------+
+|      My Workspace    |
++----------------------+
+
+Connected Apps
+
+✓ Gmail
+✓ Slack
+✓ Google Drive
+✓ Notion
+✓ WhatsApp
+✓ ChatGPT
+✓ GitHub
+✓ Calendar
+✓ Zoom
+✓ Teams
+✓ Dropbox
+
++ Connect New App
+
+Every connected application continuously syncs data into the workspace.
+
+The user doesn't care where information lives anymore.
+
+They only ask questions.
+
+Example:
+
+"What did my manager tell me about the API deadline?"
+
+The AI searches
+
+Gmail
+Slack
+Meeting transcripts
+Notion
+Calendar meeting notes
+and produces one answer with citations.
+
+Instead of Apps...
+Think of them as Data Sources.
+
+                 Workspace
+
+        +------------------------+
+        |     AI Assistant       |
+        +------------------------+
+                   |
+                   |
+          Knowledge Engine
+                   |
+       --------------------------
+       |     |      |     |     |
+    Gmail Slack Docs Zoom Notion
+
+Every source becomes searchable.
+
+User Journey
+Step 1
+User creates account.
+
+Sign Up
+
+Email
+
+Password
+
+Workspace Name
+
+Create Workspace
+
+Step 2
+Connect Applications
+
+Connect Workspace
+
+□ Gmail
+
+□ Slack
+
+□ WhatsApp
+
+□ Google Drive
+
+□ Dropbox
+
+□ Notion
+
+□ Discord
+
+□ GitHub
+
+□ ChatGPT
+
+□ Teams
+
+□ Zoom
+
+□ Calendar
+
+Click
+
+Connect Gmail
+
+Google OAuth opens.
+
+User grants permission.
+
+Done.
+
+Click
+
+Connect Slack
+
+Slack OAuth.
+
+Done.
+
+Click
+
+Connect WhatsApp
+
+Scan QR Code.
+
+Done.
+
+The workspace now has live access.
+
+Workspace Dashboard
+------------------------------------
+
+My Workspace
+
+Connected Apps
+
+✓ Gmail
+
+✓ Slack
+
+✓ WhatsApp
+
+✓ Drive
+
+✓ ChatGPT
+
+✓ GitHub
+
+Last Sync
+
+Slack
+2 min ago
+
+Gmail
+30 sec ago
+
+Drive
+5 min ago
+
+Documents Indexed
+
+48,312
+
+Messages Indexed
+
+194,223
+
+Embeddings
+
+194,223
+
+------------------------------------
+
+Internal Architecture
+               User
+
+                 |
+
+           Ask Question
+
+                 |
+
+         AI Workspace API
+
+                 |
+
+          Query Orchestrator
+
+                 |
+
+       ------------------------
+
+       |                      |
+
+  Retriever              LLM
+
+       |
+
+Vector Database
+
+       |
+
+Metadata Store
+
+       |
+
+Connectors
+
+
+The important part is connectors.
+
+Connectors
+Each application has its own connector.
+
+Slack Connector
+
+↓
+
+Slack API
+
+↓
+
+Messages
+
+↓
+
+Cleaner
+
+↓
+
+Chunking
+
+↓
+
+Embedding
+
+↓
+
+Vector DB
+
+Same for Gmail.
+
+Gmail Connector
+
+↓
+
+OAuth
+
+↓
+
+Emails
+
+↓
+
+Attachments
+
+↓
+
+Cleaning
+
+↓
+
+Embedding
+
+↓
+
+Vector DB
+
+Google Drive
+
+Drive
+
+↓
+
+PDF
+
+↓
+
+Word
+
+↓
+
+Excel
+
+↓
+
+Extract Text
+
+↓
+
+Chunk
+
+↓
+
+Embed
+
+Zoom
+
+Meeting
+
+↓
+
+Recording
+
+↓
+
+Transcript
+
+↓
+
+Chunks
+
+↓
+
+Embedding
+
+GitHub
+
+Repository
+
+↓
+
+Issues
+
+↓
+
+PRs
+
+↓
+
+Comments
+
+↓
+
+Embedding
+
+Everything becomes searchable.
+
+What Happens When Gmail is Connected?
+Example email
+
+Subject:
+Payment API Delay
+
+Body:
+
+Deployment moved to Friday.
+
+John will update API docs.
+
+Sarah will notify clients.
+
+Your system stores:
+
+Text
+
+Deployment moved to Friday.
+
+Metadata
+
+Source:
+Gmail
+
+Subject:
+Payment API Delay
+
+Sender:
+Alex
+
+Date:
+2026-07-27
+
+Thread ID:
+xxxx
+
+Workspace:
+Company ABC
+
+Then create embeddings.
+
+Embedding
+
+[0.123
+0.893
+0.991
+...]
+
+Store into vector database.
+
+Slack
+Example
+
+John
+
+Let's migrate authentication
+to JWT next sprint.
+
+Metadata
+
+Source
+
+Slack
+
+Channel
+
+backend-team
+
+Message ID
+
+Time
+
+Author
+
+Workspace
+
+Embedding.
+
+Done.
+
+WhatsApp
+Example
+
+Client
+
+Need payment fix urgently.
+
+Metadata
+
+Phone
+
+Group
+
+Timestamp
+
+Sender
+
+Workspace
+
+Embedding.
+
+Done.
+
+ChatGPT
+One unique feature.
+
+Many people ask ChatGPT hundreds of questions.
+
+Those chats disappear into history.
+
+Instead...
+
+ChatGPT
+
+↓
+
+Conversation
+
+↓
+
+Messages
+
+↓
+
+Embedding
+
+↓
+
+Workspace
+
+Now AI remembers everything.
+
+Example
+
+What did I ask ChatGPT last month
+about Kubernetes?
+
+It finds it.
+
+Multi Workspace
+This is important.
+
+One user can own multiple workspaces.
+
+Example
+
+John
+
+↓
+
+Workspaces
+
+Personal
+
+Startup
+
+Freelancing
+
+College
+
+Research
+
+Each workspace has different connected apps.
+
+Workspace 1
+
+Personal
+
+Gmail
+
+Drive
+
+WhatsApp
+
+Workspace 2
+
+Startup
+
+Slack
+
+GitHub
+
+Notion
+
+Zoom
+
+Workspace 3
+
+Research
+
+Papers
+
+PDF
+
+Arxiv
+
+Notes
+
+The user switches between workspaces.
+
+Current Workspace
+
+▼ Startup
+
+Now every search only happens inside Startup.
+
+Workspace Settings
+Workspace
+
+Name
+
+Logo
+
+Description
+
+Members
+
+Roles
+
+Connected Apps
+
+Delete Workspace
+
+Export Data
+
+Members
+Workspace
+
+John
+
+Owner
+
+Sarah
+
+Admin
+
+Alex
+
+Viewer
+
+Bob
+
+Editor
+
+Each member has permissions.
+
+AI Memory Layer
+Besides documents, AI builds memory.
+
+Example
+
+John prefers FastAPI
+
+Usually writes Python
+
+Working on Payment API
+
+Interested in RAG
+
+AI learns this over time (with user consent).
+
+Daily Indexing
+Instead of embedding everything every time:
+
+Slack
+
+↓
+
+New Messages Only
+
+↓
+
+Embedding
+
+↓
+
+Done
+
+Incremental updates.
+
+Search Flow
+User asks
+
+Where is API documentation?
+
+System
+
+Question
+
+↓
+
+Embedding
+
+↓
+
+Vector Search
+
+↓
+
+Top 20 Results
+
+↓
+
+Re-ranking
+
+↓
+
+Top 5
+
+↓
+
+LLM
+
+↓
+
+Answer
+
+Citations
+Instead of
+
+Authentication starts Monday.
+
+Return
+
+Authentication migration starts Monday.
+
+Sources
+
+Slack
+
+backend-team
+
+John
+
+10:42 AM
+
+Meeting
+
+Backend Sync
+
+12:30 PM
+
+Google Drive
+
+Auth Migration.pdf
+
+Every answer should be traceable.
+
+AI Agent Layer
+Beyond search, your AI can perform actions (with explicit user approval).
+
+Summarise today's emails
+
+↓
+
+Read Gmail
+
+↓
+
+Summarise
+
+↓
+
+Send report
+
+Or
+
+Find all invoices
+
+↓
+
+Search Gmail
+
+↓
+
+Search Drive
+
+↓
+
+Create spreadsheet
+
+Or
+
+Prepare tomorrow's meeting
+
+↓
+
+Read Calendar
+
+↓
+
+Find related Slack threads
+
+↓
+
+Find relevant docs
+
+↓
+
+Generate briefing
+
+Suggested Database Design
+Users
+
+id
+
+name
+
+email
+
+----------------
+
+Workspaces
+
+id
+
+owner_id
+
+name
+
+description
+
+----------------
+
+WorkspaceMembers
+
+workspace_id
+
+user_id
+
+role
+
+----------------
+
+Connectors
+
+workspace_id
+
+provider
+
+status
+
+oauth_token
+
+last_sync
+
+----------------
+
+Documents
+
+id
+
+workspace_id
+
+connector_id
+
+title
+
+type
+
+metadata
+
+----------------
+
+Chunks
+
+id
+
+document_id
+
+text
+
+embedding
+
+metadata
+
+----------------
+
+ChatHistory
+
+workspace_id
+
+conversation
+
+summary
+
+----------------
+
+Tasks
+
+workspace_id
+
+title
+
+status
+
+source
+
+assigned_to
+
+Recommended Tech Stack
+Frontend
+
+Next.js
+React
+TypeScript
+Tailwind CSS
+shadcn/ui
+Backend
+
+FastAPI
+Python
+SQLAlchemy
+Celery or Temporal for background jobs
+AI
+
+OpenAI / Gemini / Claude
+LangGraph (agent orchestration)
+LlamaIndex (data connectors and indexing)
+Sentence Transformers (optional local embeddings)
+Database
+
+PostgreSQL
+pgvector (store embeddings in PostgreSQL)
+Redis (caching and queues)
+Storage
+
+S3-compatible object storage (MinIO for local development, AWS S3 in production)
+Authentication
+
+Clerk, Auth0, or Supabase Auth
+OAuth 2.0 for Gmail, Slack, Google Drive, GitHub, etc.
+Deployment
+
+Docker
+Kubernetes (optional for scaling)
+GitHub Actions (CI/CD)
+A Development Roadmap
+Phase 1 – Core MVP
+
+User authentication
+Workspace creation
+PDF and text uploads
+Chunking and embedding
+Semantic search with citations
+Chat interface
+Phase 2 – Connectors
+
+Gmail
+Google Drive
+Slack
+Notion
+Phase 3 – Collaboration
+
+Multiple workspaces
+Team members and roles
+Shared knowledge base
+Workspace-level permissions
+Phase 4 – AI Features
+
+Daily briefing
+Meeting summaries
+Decision tracker
+Action item extraction
+Personal memory (opt-in)
+Cross-source search and reasoning
+Phase 5 – AI Agents
+
+Schedule meetings
+Draft emails
+Find related documents automatically
+Create task lists from meetings
+Suggest follow-ups across connected apps
+This architecture closely resembles the kind of systems built by enterprise AI platforms such as Microsoft Copilot, Google Gemini Workspace, Glean, and Notion AI, but your project can differentiate itself by focusing on user-controlled workspaces, multi-source knowledge retrieval, strong source attribution, and modular connectors. Building even the first three phases well would be a substantial portfolio project that demonstrates production-ready AI engineering skills rather than just chatbot development.

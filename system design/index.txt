@@ -1,0 +1,330 @@
+Your idea is actually much stronger than a normal chatbot. It is closer to building a Personal AI Knowledge Workspace — a system that connects all your information sources and lets you ask questions over your own digital life.
+
+This is the type of project that can genuinely demonstrate AI Engineer skills.
+
+Think of it as:
+
+"An AI memory layer over Slack, WhatsApp, Email, Meetings, Documents, and Notes."
+
+Project: Personal AI Workspace (Second Brain)
+Problem
+
+Today your information is scattered:
+
+Slack
+ |
+WhatsApp
+ |
+Gmail
+ |
+Google Drive
+ |
+Notion
+ |
+Meeting recordings
+ |
+Documents
+
+You forget:
+
+What was decided in yesterday's meeting?
+Who promised to do what?
+Where is that API document?
+What did my manager say about the deadline?
+Your AI Workspace
+
+You create one place:
+
+My AI Workspace
+
+Ask anything:
+
+"Tell me today's meeting summary"
+
+"What did John say about the payment issue?"
+
+"Where is the API documentation?"
+
+"What tasks are assigned to me?"
+
+AI searches your entire knowledge base and answers.
+
+Example:
+
+User:
+
+What happened in today's meeting?
+
+AI:
+
+Today's Backend Team Meeting
+
+Summary:
+The team decided to migrate authentication
+from session-based auth to JWT.
+
+Key decisions:
+1. JWT migration starts next sprint
+2. Database schema remains unchanged
+
+Action Items:
+
+John:
+- Create migration plan
+Deadline: Friday
+
+Sarah:
+- Update API documentation
+
+
+Sources:
+✓ Slack #backend-team
+  Message from John, 10:42 AM
+
+✓ Google Meet transcript
+  Meeting: Backend Sync, July 27
+
+✓ Notion document
+  Auth Migration Plan
+
+This "source citation" part is very important.
+
+How you build it technically
+
+Architecture:
+
+                 User
+                  |
+                  |
+            AI Workspace
+                  |
+        -------------------
+        |                 |
+    Retriever          LLM
+        |
+        |
+  Vector Database
+        |
+ -------------------------
+ |       |       |        |
+Slack  Gmail WhatsApp  Docs
+Core AI Concepts You Learn
+1. Data ingestion pipelines
+
+You need connectors:
+
+Slack API
+   |
+   |
+Messages
+   |
+Cleaning
+   |
+Chunking
+   |
+Embedding
+   |
+Vector DB
+
+Same for:
+
+emails
+PDFs
+meeting transcripts
+2. Embeddings
+
+Convert information into meaning.
+
+Example:
+
+Text:
+
+"We will deploy payment API next Monday"
+
+becomes:
+
+[0.231, 0.882, 0.124 ...]
+
+Now AI can find related information.
+
+3. RAG (Retrieval Augmented Generation)
+
+The heart of the project.
+
+Without RAG:
+
+Question
+   |
+LLM
+   |
+Answer
+
+Problem:
+
+LLM does not know your private data.
+
+With RAG:
+
+Question
+   |
+Search your workspace
+   |
+Find relevant messages/documents
+   |
+Give context to LLM
+   |
+Generate answer
+4. Source attribution
+
+This is what makes it impressive.
+
+Every chunk should store metadata:
+
+Example:
+
+{
+"text":
+"Meeting decided to use PostgreSQL",
+
+"source":
+"Google Meet",
+
+"date":
+"2026-07-27",
+
+"person":
+"John",
+
+"url":
+"meeting-link"
+}
+
+Then your AI can answer:
+
+Source:
+
+📄 Backend Meeting
+July 27, 2026
+Timestamp: 12:43
+
+💬 Slack #backend-team
+John message
+10:42 AM
+MVP Version (Don't make it huge)
+
+Do NOT start with WhatsApp + Slack + Gmail.
+
+Build:
+
+Version 1
+
+Sources:
+
+✅ PDF documents
+✅ Meeting transcripts
+✅ Notes
+
+Features:
+
+Upload files
+Ask questions
+Get answers
+Show citations
+Version 2
+
+Add:
+
+Gmail
+Slack
+Google Drive
+Version 3
+
+Add:
+
+Memory
+Personal preferences
+Daily summaries
+Tech Stack
+
+Backend:
+
+Python
+FastAPI
+
+AI:
+
+OpenAI API / Claude / Gemini
+LangGraph (for workflows)
+LlamaIndex (good for this use case)
+
+Database:
+
+PostgreSQL
+pgvector OR
+ChromaDB
+
+Frontend:
+
+React / Next.js
+
+Storage:
+
+S3 compatible storage
+Features that would impress recruiters
+
+Add these:
+
+1. "Daily Briefing"
+
+Every morning:
+
+Good morning.
+
+Yesterday:
+- 5 Slack conversations
+- 2 meetings
+- 3 documents updated
+
+Important:
+Payment API deadline changed.
+2. "Decision Tracker"
+
+AI finds decisions:
+
+Decision:
+Move database migration to August 5
+
+Made by:
+Alex
+
+Source:
+Engineering meeting
+3. "Personal Search Engine"
+
+Like Google for your life:
+
+Search:
+"authentication issue"
+
+Results:
+
+1. Slack conversation
+2. Meeting transcript
+3. GitHub discussion
+Why this project can get you hired
+
+Because it demonstrates:
+
+✅ RAG
+✅ Vector databases
+✅ LLM applications
+✅ Data pipelines
+✅ AI system design
+✅ Real business value
+✅ Production thinking
+
+A resume bullet could become:
+
+Built a personal AI knowledge workspace that unified documents, conversations, and meeting data using RAG pipelines, embeddings, vector search, and LLM-based retrieval with source-grounded responses.
+
+This is much closer to an actual AI Engineer product than another chatbot.
