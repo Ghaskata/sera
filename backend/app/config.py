@@ -32,6 +32,18 @@ class Settings(BaseSettings):
     meeting_sync_max_records: int = 100
     notes_sync_max_records: int = 100
 
+    chunk_size_tokens: int = 500
+    chunk_overlap_tokens: int = 50
+    vector_store_backend: str = "pgvector"
+    chroma_persist_dir: str = "./.chroma"
+    chroma_collection_name: str = "sera_chunks"
+    pinecone_api_key: str = ""
+    pinecone_index_host: str = ""
+    pinecone_namespace: str = "sera"
+
+    start_telegram_in_web: bool = True
+    start_scheduler_in_web: bool = True
+
     rag_query_token: str = ""
     rag_min_similarity: float = 0.55
     rag_top_k: int = 5

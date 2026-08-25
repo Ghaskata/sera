@@ -9,6 +9,7 @@ from app.models.chunk import Chunk
 from app.models.query_log import QueryLog
 from app.services.embeddings import embed_text
 from app.services.llm import generate_answer
+from app.services.vector_store import get_vector_store
 
 NO_CONTEXT_ANSWER = "I couldn't find relevant information in your connected sources for that question."
 
@@ -39,11 +40,50 @@ async def retrieve_context(
 ) -> list[tuple[Chunk, float]]:
     """Retrieve relevant chunks from every connected source in one workspace."""
     query_vector = await embed_text(question)
+    limit = top_k or settings.rag_top_k
+    vector_store = get_vector_store()
+
+    if vector_store is not None:
+        matches = await vector_store.query(
+            query_vector,
+            str(workspace_id),
+            limit,
+            source_types,
+        )
+        if not matches:
+            return []
+        chunk_ids = []
+        for match in matches:
+            try:
+                chunk_ids.append(uuid.UUID(match.chunk_id))
+            except ValueError:
+                continue
+        if not chunk_ids:
+            return []
+        chunks = (
+            await session.scalars(
+                select(Chunk).where(
+                    Chunk.workspace_id == workspace_id,
+                    Chunk.id.in_(chunk_ids),
+                )
+            )
+        ).all()
+        by_id = {str(chunk.id): chunk for chunk in chunks}
+        return [
+            (by_id[match.chunk_id], match.similarity)
+            for match in matches
+            if match.similarity >= settings.rag_min_similarity and match.chunk_id in by_id
+        ]
+
     distance = Chunk.embedding.cosine_distance(query_vector)
-    stmt = select(Chunk, distance.label("distance")).where(Chunk.workspace_id == workspace_id)
+    stmt = (
+        select(Chunk, distance.label("distance"))
+        .where(Chunk.workspace_id == workspace_id)
+        .order_by(distance)
+        .limit(limit)
+    )
     if source_types:
         stmt = stmt.where(Chunk.chunk_metadata["source"].as_string().in_(sorted(source_types)))
-    stmt = stmt.order_by(distance).limit(top_k or settings.rag_top_k)
     rows = (await session.execute(stmt)).all()
     return [(chunk, 1 - dist) for chunk, dist in rows if (1 - dist) >= settings.rag_min_similarity]
 

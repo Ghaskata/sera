@@ -27,6 +27,7 @@ from app.services.connectors import (
     GOOGLE_KEEP,
     get_or_create_pending_connector,
 )
+from app.services.notifications import send_telegram_message
 from app.services.oauth_state import create_oauth_state
 from app.search.rag import answer_question
 from app.telegram_bot.registry import get_bot
@@ -284,16 +285,15 @@ async def trigger_connector_sync_and_notify(
         except Exception:
             logger.exception("Initial %s sync failed for connector %s", provider, connector_id)
 
+    text = (
+        f"{provider.replace('_', ' ').title()} connected. Your source has been indexed "
+        "or is still processing. Ask me anything!"
+    )
     bot = get_bot()
     if bot is not None:
-        await bot.send_message(
-            chat_id=telegram_user_id,
-            text=(
-                f"{provider.replace('_', ' ').title()} connected. Your source has been indexed "
-                "or is still processing. "
-                "Ask me anything!"
-            ),
-        )
+        await bot.send_message(chat_id=telegram_user_id, text=text)
+    else:
+        await send_telegram_message(telegram_user_id, text)
 
 
 # Backwards-compatible names used by existing callback code.

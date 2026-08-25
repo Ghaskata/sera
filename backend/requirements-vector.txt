@@ -1,0 +1,3 @@
+# Install this file only when VECTOR_STORE_BACKEND is chroma or pinecone.
+chromadb
+pinecone

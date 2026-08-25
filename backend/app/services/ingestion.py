@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime, timezone
 
@@ -9,6 +10,9 @@ from app.models.connector import Connector
 from app.models.document import Document
 from app.services.chunking import chunk_text
 from app.services.embeddings import embed_texts
+from app.services.vector_store import get_vector_store
+
+logger = logging.getLogger(__name__)
 
 
 async def index_text_document(
@@ -28,6 +32,7 @@ async def index_text_document(
     if not text or not text.strip():
         return None
 
+    vector_store = get_vector_store()
     existing = await session.scalar(
         select(Document).where(
             Document.connector_id == connector.id,
@@ -52,6 +57,11 @@ async def index_text_document(
         session.add(document)
     else:
         document = existing
+        if vector_store:
+            try:
+                await vector_store.delete_document(str(document.id), str(connector.workspace_id))
+            except Exception:
+                logger.exception("Could not remove old external vectors for document %s", document.id)
         await session.execute(Chunk.__table__.delete().where(Chunk.document_id == document.id))
         document.title = title
         document.mime_type = mime_type
@@ -71,16 +81,33 @@ async def index_text_document(
     }
     if extra_metadata:
         base_metadata.update(extra_metadata)
+
+    vector_records = []
     for piece, vector in zip(pieces, vectors):
-        session.add(
-            Chunk(
-                id=uuid.uuid4(),
-                document_id=document.id,
-                workspace_id=connector.workspace_id,
-                text=piece,
-                embedding=vector,
-                chunk_metadata=base_metadata,
-            )
+        chunk = Chunk(
+            id=uuid.uuid4(),
+            document_id=document.id,
+            workspace_id=connector.workspace_id,
+            text=piece,
+            embedding=vector,
+            chunk_metadata=base_metadata,
+        )
+        session.add(chunk)
+        vector_records.append(
+            {
+                "id": str(chunk.id),
+                "document_id": str(document.id),
+                "workspace_id": str(connector.workspace_id),
+                "text": piece,
+                "embedding": vector,
+                **base_metadata,
+            }
         )
     await session.commit()
+
+    if vector_store and vector_records:
+        try:
+            await vector_store.upsert_chunks(vector_records)
+        except Exception:
+            logger.exception("External vector upsert failed for document %s", document.id)
     return document

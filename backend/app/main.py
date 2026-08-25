@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.api.routes import connectors, health, oauth, rag
+from app.config import settings
 from app.scheduler import build_scheduler
 from app.telegram_bot.bot import build_application
 
@@ -13,22 +14,31 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    bot_app = build_application()
-    await bot_app.initialize()
-    await bot_app.start()
-    await bot_app.updater.start_polling()
+    bot_app = None
+    scheduler = None
+    if settings.start_telegram_in_web:
+        bot_app = build_application()
+        await bot_app.initialize()
+        await bot_app.start()
+        await bot_app.updater.start_polling()
+    if settings.start_scheduler_in_web:
+        scheduler = build_scheduler()
+        scheduler.start()
 
-    scheduler = build_scheduler()
-    scheduler.start()
-
-    logger.info("Sera backend started: Telegram bot polling + scheduler running")
+    logger.info(
+        "Sera backend started: telegram_in_web=%s scheduler_in_web=%s",
+        settings.start_telegram_in_web,
+        settings.start_scheduler_in_web,
+    )
     try:
         yield
     finally:
-        scheduler.shutdown(wait=False)
-        await bot_app.updater.stop()
-        await bot_app.stop()
-        await bot_app.shutdown()
+        if scheduler is not None:
+            scheduler.shutdown(wait=False)
+        if bot_app is not None:
+            await bot_app.updater.stop()
+            await bot_app.stop()
+            await bot_app.shutdown()
 
 
 app = FastAPI(title="Sera Backend", lifespan=lifespan)
