@@ -40,9 +40,13 @@ def _client_config() -> dict:
     }
 
 
-def build_authorization_url(state: str, provider: str = "google_drive") -> str:
+def build_authorization_url(
+    state: str,
+    provider: str = "google_drive",
+    redirect_uri: str | None = None,
+) -> str:
     flow = Flow.from_client_config(_client_config(), scopes=scopes_for_provider(provider), state=state)
-    flow.redirect_uri = settings.google_oauth_redirect_uri
+    flow.redirect_uri = redirect_uri or settings.google_oauth_redirect_uri
     url, _ = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
@@ -51,9 +55,14 @@ def build_authorization_url(state: str, provider: str = "google_drive") -> str:
     return url
 
 
-def exchange_code_for_tokens(code: str, state: str, provider: str = "google_drive") -> dict:
+def exchange_code_for_tokens(
+    code: str,
+    state: str,
+    provider: str = "google_drive",
+    redirect_uri: str | None = None,
+) -> dict:
     flow = Flow.from_client_config(_client_config(), scopes=scopes_for_provider(provider), state=state)
-    flow.redirect_uri = settings.google_oauth_redirect_uri
+    flow.redirect_uri = redirect_uri or settings.google_oauth_redirect_uri
     flow.fetch_token(code=code)
     return credentials_to_dict(flow.credentials)
 

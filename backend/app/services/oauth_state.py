@@ -12,7 +12,7 @@ STATE_TTL_MINUTES = 10
 
 async def create_oauth_state(
     session: AsyncSession,
-    user_id: uuid.UUID,
+    user_id: uuid.UUID | None,
     provider: str = "google",
     purpose: str = "login_and_drive",
 ) -> OAuthState:

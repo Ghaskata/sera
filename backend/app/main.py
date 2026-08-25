@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.routes import connectors, health, oauth, rag
+from app.api.routes import auth, connectors, health, oauth, rag
 from app.config import settings
 from app.scheduler import build_scheduler
 from app.telegram_bot.bot import build_application
@@ -43,6 +43,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Sera Backend", lifespan=lifespan)
 app.include_router(health.router)
+app.include_router(auth.router)
 app.include_router(connectors.router)
 app.include_router(oauth.router)
 app.include_router(rag.router)

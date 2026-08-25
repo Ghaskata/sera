@@ -6,6 +6,7 @@ from app.models.oauth_state import OAuthState
 from app.models.query_log import QueryLog
 from app.models.user import User
 from app.models.work_intelligence import Approval, AutomationCandidate, WorkEvent
+from app.models.web_session import WebSession
 from app.models.workspace import Workspace
 
-__all__ = ["User", "Workspace", "Connector", "Document", "Chunk", "QueryLog", "OAuthState", "Meeting", "WorkEvent", "AutomationCandidate", "Approval"]
+__all__ = ["User", "Workspace", "Connector", "Document", "Chunk", "QueryLog", "OAuthState", "Meeting", "WorkEvent", "AutomationCandidate", "Approval", "WebSession"]

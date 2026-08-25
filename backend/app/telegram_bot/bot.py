@@ -23,6 +23,7 @@ def build_application() -> Application:
     application.add_handler(CommandHandler("connect_drive", handlers.connect_drive))
     application.add_handler(CommandHandler("insights", handlers.insights))
     application.add_handler(CommandHandler("why", handlers.why))
+    application.add_handler(CommandHandler("ask", handlers.ask_command))
     application.add_handler(CallbackQueryHandler(handlers.connector_button, pattern=r"^setup:"))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handlers.ask))
 

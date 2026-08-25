@@ -1,11 +1,13 @@
 import asyncio
 import logging
 from html import escape
+from urllib.parse import quote
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy import select
-from fastapi.responses import HTMLResponse
 
+from app.config import settings
 from app.connectors.google_drive.oauth import exchange_code_for_tokens, fetch_google_profile
 from app.connectors.microsoft_teams.oauth import exchange_microsoft_code, microsoft_profile
 from app.connectors.slack.oauth import exchange_slack_code, slack_auth_test
@@ -72,7 +74,7 @@ async def _oauth_callback(provider_family: str, code: str, state: str, error: st
                     state=state,
                     provider=oauth_state.provider,
                 )
-                profile = await fetch_google_profile(tokens["token"])
+                profile = await asyncio.to_thread(fetch_google_profile, tokens["token"])
                 user, workspace = await link_google_identity(session, user, profile)
             elif provider_family == "slack":
                 tokens = await exchange_slack_code(code, state)
@@ -98,14 +100,20 @@ async def _oauth_callback(provider_family: str, code: str, state: str, error: st
         telegram_user_id = user.telegram_user_id
         connector_id = connector.id
         connector_provider = oauth_state.provider
+        oauth_purpose = oauth_state.purpose
 
     if telegram_user_id is not None:
         asyncio.create_task(
             trigger_connector_sync_and_notify(connector_id, telegram_user_id, connector_provider)
         )
 
-    return (
-        f"<html><body>{provider_family.title()} account connected. "
+    if oauth_purpose == "web_connector_link":
+        return RedirectResponse(
+            url=f"{settings.web_frontend_origin}/?connected={quote(connector_provider)}",
+            status_code=303,
+        )
+    return HTMLResponse(
+        f"<html><body>{escape(provider_family.title())} account connected. "
         "Sera is syncing the permitted data. You can return to Telegram now.</body></html>"
     )
 

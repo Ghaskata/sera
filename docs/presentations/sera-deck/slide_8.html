@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 8</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+            padding-left: 80px;
+            padding-right: 80px;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -90px;
+            margin-bottom: 80px;
+            letter-spacing: -0.03em;
+            max-width: 900px;
+        }
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .flow-step {
+            border-top: 4px solid #0033FF;
+            padding-top: 24px;
+        }
+        .step-num {
+            font-weight: 900;
+            font-size: 24px;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+        .step-text {
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 1.5;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h2>From question to cited Gemini answer</h2>
+        <div class="flow-grid">
+            <div class="flow-step">
+                <div class="step-num">01. Query</div>
+                <div class="step-text">User asks in Telegram with /ask or uses Memory Search in the dashboard.</div>
+            </div>
+            <div class="flow-step">
+                <div class="step-num">02. Retrieval</div>
+                <div class="step-text">SERA embeds the query, retrieves across permitted connected sources, applies workspace/source filters, and enforces a similarity floor.</div>
+            </div>
+            <div class="flow-step">
+                <div class="step-num">03. Generation</div>
+                <div class="step-text">Gemini receives only the retrieved context and produces the answer.</div>
+            </div>
+            <div class="flow-step">
+                <div class="step-num">04. Delivery</div>
+                <div class="step-text">The response includes deduplicated citations and is recorded in the query log for traceability.</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

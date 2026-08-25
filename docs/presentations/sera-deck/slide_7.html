@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 7</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 80px;
+            padding-right: 80px;
+            align-items: center;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .option-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .option-item {
+            background-color: #f4f4f4;
+            padding: 24px;
+            border-left: 8px solid #000000;
+        }
+        .option-item.default {
+            border-left-color: #0033FF;
+        }
+        .option-title {
+            font-weight: 900;
+            font-size: 24px;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+        .option-desc {
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 1.5;
+            color: #333333;
+        }
+        .footer-note {
+            font-weight: 900;
+            font-size: 20px;
+            color: #0033FF;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-top: 24px;
+            border-top: 2px solid #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>One RAG contract, three deployment choices</h2>
+            </div>
+            <div>
+                <div class="option-list">
+                    <div class="option-item default">
+                        <div class="option-title">PostgreSQL + pgvector (Default)</div>
+                        <div class="option-desc">Simple, workspace-local deployment integrated directly with the primary database.</div>
+                    </div>
+                    <div class="option-item">
+                        <div class="option-title">Chroma</div>
+                        <div class="option-desc">Local/private option: persistent Chroma collection with cosine retrieval and metadata filters.</div>
+                    </div>
+                    <div class="option-item">
+                        <div class="option-title">Pinecone</div>
+                        <div class="option-desc">Managed scale option: Pinecone host + namespace + workspace metadata filters.</div>
+                    </div>
+                </div>
+                <div class="footer-note">
+                    Retrieval always re-fetches internal chunk rows by ID before Gemini generation, preserving tenant isolation.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

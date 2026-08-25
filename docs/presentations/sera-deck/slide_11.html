@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 11</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr 0.9fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: start;
+            padding-top: 40px;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .text-block {
+            font-weight: 400;
+            font-size: 26px;
+            line-height: 1.5;
+            color: #333333;
+        }
+        .text-block p {
+            margin-bottom: 32px;
+        }
+        .highlight {
+            color: #0033FF;
+            font-weight: 900;
+        }
+        .stat-box {
+            background-color: #f4f4f4;
+            padding: 24px;
+            border-left: 4px solid #000000;
+            margin-bottom: 32px;
+        }
+        .stat-box strong {
+            display: block;
+            font-size: 20px;
+            color: #000000;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>The product flywheel gets stronger with use</h2>
+            </div>
+            <div class="text-block">
+                <p>More connected context improves answers and source-grounded memory.</p>
+                <div class="stat-box">
+                    <strong>Work Events</strong>
+                    Repeated actions are measured by frequency, first/last detection, average duration, and time cost.
+                </div>
+            </div>
+            <div class="text-block">
+                <p>Approved candidates become <span class="highlight">workflow definitions</span>, not silent automations.</p>
+                <p style="font-weight: 900; font-size: 32px; color: #000000; line-height: 1.2; border-top: 4px solid #0033FF; padding-top: 24px;">
+                    The system evolves from "search what happened" to "show me what I should stop doing."
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

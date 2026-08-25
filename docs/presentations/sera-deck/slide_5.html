@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 5</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 80px;
+            padding-right: 80px;
+            align-items: center;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .feature-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 24px;
+            align-items: baseline;
+            border-top: 2px solid #eeeeee;
+            padding-top: 24px;
+        }
+        .feature-item:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+        .feature-title {
+            font-weight: 900;
+            font-size: 24px;
+            color: #0033FF;
+            text-transform: uppercase;
+        }
+        .feature-desc {
+            font-weight: 400;
+            font-size: 24px;
+            line-height: 1.5;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>The dashboard makes connected context legible</h2>
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-title">Connection Cards</div>
+                    <div class="feature-desc">Show status, capability, setup mode, sync state, and provider limitations.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">Server Setup</div>
+                    <div class="feature-desc">"Continue setup" routes through the backend so OAuth state and consent stay server-controlled.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">Memory Search</div>
+                    <div class="feature-desc">Uses the authenticated proxy and returns source citations instead of an opaque answer.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-title">Work Detective</div>
+                    <div class="feature-desc">Designed to turn repeated activity into reviewable automation candidates.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

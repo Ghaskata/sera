@@ -1,0 +1,155 @@
+{
+  "project_info": {
+    "title": "SERA",
+    "created": 1787650467.807,
+    "last_updated": 1787650687.803,
+    "total_slides": 13
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "slide_1",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "slide_2",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "slide_3",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "slide_4",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "slide_5",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "slide_6",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "slide_7",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "slide_8",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "slide_9",
+      "state": "edited",
+      "pageNum": 10
+    },
+    {
+      "id": "slide_10",
+      "state": "edited",
+      "pageNum": 11
+    },
+    {
+      "id": "slide_11",
+      "state": "edited",
+      "pageNum": 12
+    },
+    {
+      "id": "slide_12",
+      "state": "edited",
+      "pageNum": 13
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "SERA",
+      "summary": "Title slide introducing SERA as an AI work memory that learns how users work.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_1",
+      "title": "The product thesis: remember more, repeat less",
+      "summary": "Explains SERA's core loop: Remember, Understand, Detect, Automate.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_2",
+      "title": "One intelligence layer across fragmented work",
+      "summary": "Highlights supported sources, normalized memory layer, and human approval boundary.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_3",
+      "title": "Telegram-first, web-ready product architecture",
+      "summary": "Outlines the roles of Telegram, FastAPI, React dashboard, and PostgreSQL in the architecture.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_4",
+      "title": "Security is built into the connection boundary",
+      "summary": "Details secure Google login, opaque cookies, server-side workspace derivation, and encrypted tokens.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_5",
+      "title": "The dashboard makes connected context legible",
+      "summary": "Describes connection cards, server-controlled setup, Memory Search, and Work Detective.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_6",
+      "title": "Documents become retrieval-ready memory",
+      "summary": "Explains provider sync, chunking, Gemini embeddings, and vector backend mirroring.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_7",
+      "title": "One RAG contract, three deployment choices",
+      "summary": "Compares pgvector, Chroma, and Pinecone deployment options for retrieval.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_8",
+      "title": "From question to cited Gemini answer",
+      "summary": "Traces the query flow from user input to vector retrieval, Gemini generation, and citations.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_9",
+      "title": "Integrations are staged by capability and consent",
+      "summary": "Lists implemented read-oriented sync foundations and outlines limitations for Maps, Notes, and social connectors.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_10",
+      "title": "Background workers keep memory current",
+      "summary": "Explains the separation of API, Telegram polling, and scheduled sync processes.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_11",
+      "title": "The product flywheel gets stronger with use",
+      "summary": "Describes how connected context improves memory and repeated actions become automation candidates.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_12",
+      "title": "The next milestone: safe action execution",
+      "summary": "Outlines future work on UX, notifications, social connectors, and approved workflow execution.",
+      "image_plan": "Use a suitable image if needed"
+    }
+  ]
+}

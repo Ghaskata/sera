@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr 0.9fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: center;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 80px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px; /* Bleed effect */
+            letter-spacing: -0.03em;
+        }
+        .text-block {
+            font-weight: 400;
+            font-size: 28px;
+            line-height: 1.5;
+            color: #333333;
+        }
+        .text-block p {
+            margin-bottom: 24px;
+        }
+        .highlight {
+            color: #0033FF;
+            font-weight: 900;
+        }
+        .core-loop {
+            background-color: #f4f4f4;
+            padding: 32px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #000000;
+            border-left: 8px solid #0033FF;
+        }
+        .core-loop div {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .core-loop div:last-child {
+            margin-bottom: 0;
+        }
+        .core-loop span {
+            color: #0033FF;
+            margin-right: 16px;
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>The product thesis:<br>remember more,<br>repeat less</h2>
+            </div>
+            <div class="text-block">
+                <p>SERA is <span class="highlight">not just a chatbot</span>; it builds a living memory of work and life context.</p>
+                <p>It answers "What happened?" with evidence and asks "What should never be manual again?"</p>
+            </div>
+            <div class="core-loop">
+                <div><span>→</span> Remember</div>
+                <div><span>→</span> Understand</div>
+                <div><span>→</span> Detect</div>
+                <div><span>→</span> Automate</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

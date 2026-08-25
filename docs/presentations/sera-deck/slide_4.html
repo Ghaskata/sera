@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 4</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr 0.9fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: start;
+            padding-top: 40px;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .text-block {
+            font-weight: 400;
+            font-size: 26px;
+            line-height: 1.5;
+            color: #333333;
+        }
+        .text-block p {
+            margin-bottom: 32px;
+            padding-left: 24px;
+            border-left: 4px solid #000000;
+        }
+        .highlight {
+            color: #0033FF;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>Security is built into the connection boundary</h2>
+            </div>
+            <div class="text-block">
+                <p>Google login creates a verified identity and a <span class="highlight">server-side workspace session</span>.</p>
+                <p>The browser receives only an opaque, HttpOnly, SameSite cookie; the raw session token is never stored in the database.</p>
+            </div>
+            <div class="text-block">
+                <p>Workspace ID is <span class="highlight">derived server-side</span> from the session, not accepted from browser query payloads.</p>
+                <p>OAuth state is short-lived and one-time; provider tokens are encrypted at rest.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

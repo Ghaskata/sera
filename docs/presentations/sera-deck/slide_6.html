@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 6</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr 0.9fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: start;
+            padding-top: 40px;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .step-block {
+            margin-bottom: 40px;
+        }
+        .step-number {
+            font-weight: 900;
+            font-size: 48px;
+            color: #0033FF;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .step-title {
+            font-weight: 900;
+            font-size: 24px;
+            color: #000000;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .step-desc {
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 1.5;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>Documents become retrieval-ready memory</h2>
+            </div>
+            <div>
+                <div class="step-block">
+                    <div class="step-number">01</div>
+                    <div class="step-title">Provider Sync</div>
+                    <div class="step-desc">Normalizes raw content into documents with source, title, date, person, URL, and connector metadata.</div>
+                </div>
+                <div class="step-block">
+                    <div class="step-number">02</div>
+                    <div class="step-title">Chunking</div>
+                    <div class="step-desc">Configurable chunking defaults to 500-token chunks with 50-token overlap.</div>
+                </div>
+            </div>
+            <div>
+                <div class="step-block">
+                    <div class="step-number">03</div>
+                    <div class="step-title">Gemini Embeddings</div>
+                    <div class="step-desc">Represent chunks semantically for cross-source search.</div>
+                </div>
+                <div class="step-block">
+                    <div class="step-number">04</div>
+                    <div class="step-title">Re-indexing</div>
+                    <div class="step-desc">Removes stale vectors and mirrors the same metadata across the selected vector backend.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

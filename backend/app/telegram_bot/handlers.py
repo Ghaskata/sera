@@ -228,10 +228,8 @@ async def why(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
-async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def _answer_telegram_question(update: Update, question: str) -> None:
     tg_user = update.effective_user
-    question = update.message.text
-
     async with async_session_factory() as session:
         user, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
         connector = await get_or_create_pending_connector(session, workspace.id, GOOGLE_DRIVE)
@@ -256,6 +254,18 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             source_lines.append(label)
         text += "\n\nSources:\n" + "\n".join(source_lines)
     await _split_and_send(update, text)
+
+
+async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await _answer_telegram_question(update, update.message.text)
+
+
+async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    question = " ".join(context.args).strip()
+    if not question:
+        await update.message.reply_text("Usage: /ask <question>")
+        return
+    await _answer_telegram_question(update, question)
 
 
 async def trigger_connector_sync_and_notify(

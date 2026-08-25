@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: str = ""
     google_oauth_redirect_uri: str = "http://localhost:8000/oauth/google/callback"
+    google_web_oauth_redirect_uri: str = "http://localhost:8000/auth/google/callback"
     google_maps_api_key: str = ""
 
     gemini_api_key: str = ""
@@ -43,6 +44,9 @@ class Settings(BaseSettings):
 
     start_telegram_in_web: bool = True
     start_scheduler_in_web: bool = True
+    web_session_ttl_days: int = 14
+    web_cookie_secure: bool = False
+    web_frontend_origin: str = "http://localhost:5173"
 
     rag_query_token: str = ""
     rag_min_similarity: float = 0.55

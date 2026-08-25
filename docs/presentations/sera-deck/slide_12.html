@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 12</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+            padding-left: 80px;
+            padding-right: 80px;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 96px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            margin-bottom: 60px;
+            letter-spacing: -0.03em;
+            max-width: 1000px;
+        }
+        .next-steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1000px;
+        }
+        .step {
+            border-top: 4px solid #0033FF;
+            padding-top: 16px;
+        }
+        .step p {
+            font-weight: 400;
+            font-size: 24px;
+            line-height: 1.5;
+            color: #333333;
+        }
+        .step strong {
+            font-weight: 900;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h2>The next milestone:<br>safe action execution</h2>
+        <div class="next-steps">
+            <div class="step">
+                <p><strong>Complete Web Session UX</strong><br>Live sync counters, re-authentication, and user-configured source filters.</p>
+            </div>
+            <div class="step">
+                <p><strong>Outbox & Notifications</strong><br>Reliable event delivery and non-noisy sync digests.</p>
+            </div>
+            <div class="step">
+                <p><strong>Social Connectors</strong><br>Provider-specific implementations after scope and app review validation.</p>
+            </div>
+            <div class="step">
+                <p><strong>Audited Execution</strong><br>Execute approved workflows through reversible actions with clear user confirmation.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

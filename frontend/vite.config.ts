@@ -9,6 +9,7 @@ export default defineConfig({
       "/connectors": "http://127.0.0.1:8000",
       "/rag": "http://127.0.0.1:8000",
       "/oauth": "http://127.0.0.1:8000",
+      "/auth": "http://127.0.0.1:8000",
     },
   },
 });

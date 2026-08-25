@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: center;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .component {
+            background-color: #f4f4f4;
+            padding: 32px;
+            border-top: 8px solid #0033FF;
+        }
+        .component h3 {
+            font-weight: 900;
+            font-size: 28px;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+        .component p {
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 1.5;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>Telegram-first, web-ready product architecture</h2>
+            </div>
+            <div class="component-grid">
+                <div class="component">
+                    <h3>Telegram</h3>
+                    <p>First conversational surface for onboarding, account linking, status, insights, and /ask commands.</p>
+                </div>
+                <div class="component">
+                    <h3>FastAPI</h3>
+                    <p>Owns OAuth callbacks, encrypted credentials, ingestion, retrieval, Gemini reasoning, and scheduled sync.</p>
+                </div>
+                <div class="component">
+                    <h3>React Dashboard</h3>
+                    <p>Visual command center for connections, memory search, and Work Detective insights.</p>
+                </div>
+                <div class="component">
+                    <h3>PostgreSQL</h3>
+                    <p>Keeps users, workspaces, connectors, chunks, sessions, and query logs durable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

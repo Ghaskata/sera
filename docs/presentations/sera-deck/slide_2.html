@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid #000000;
+            border-bottom: 8px solid #000000;
+            overflow: hidden;
+        }
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr 1fr;
+            gap: 60px;
+            padding-right: 80px;
+            align-items: start;
+        }
+        h2 {
+            font-weight: 900;
+            font-size: 72px;
+            line-height: 0.9;
+            color: #000000;
+            margin-left: -10px;
+            letter-spacing: -0.03em;
+            padding-top: 20px;
+        }
+        .text-block {
+            font-weight: 400;
+            font-size: 26px;
+            line-height: 1.5;
+            color: #333333;
+            padding-top: 20px;
+        }
+        .text-block p {
+            margin-bottom: 32px;
+        }
+        .highlight {
+            color: #0033FF;
+            font-weight: 900;
+        }
+        .source-list {
+            list-style: none;
+            padding-top: 20px;
+        }
+        .source-list li {
+            font-size: 28px;
+            font-weight: 900;
+            color: #000000;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #eeeeee;
+            padding-bottom: 8px;
+        }
+        .source-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grid-wrapper">
+            <div>
+                <h2>One intelligence layer across fragmented work</h2>
+            </div>
+            <div>
+                <ul class="source-list">
+                    <li>Gmail & Drive</li>
+                    <li>Calendar & Meet</li>
+                    <li>Slack & Teams</li>
+                    <li>Google Notes</li>
+                    <li style="color: #888888;">Future: Social</li>
+                </ul>
+            </div>
+            <div class="text-block">
+                <p>A <span class="highlight">normalized memory layer</span> turns messages, documents, meetings, transcripts, and events into searchable context.</p>
+                <p><strong>Human approval</strong> remains the absolute boundary before any external actions are executed.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
