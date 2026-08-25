@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 9</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 100px;
+            overflow: hidden;
+        }
+        .header {
+            margin-bottom: 80px;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 28px;
+            color: #A0AABF;
+            max-width: 900px;
+            line-height: 1.5;
+        }
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 60px;
+            flex-grow: 1;
+        }
+        .step {
+            border-top: 2px solid rgba(185, 243, 107, 0.4);
+            padding-top: 30px;
+        }
+        .step-number {
+            font-weight: 300;
+            font-size: 64px;
+            color: #b9f36b;
+            margin-bottom: 16px;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        h3 {
+            font-weight: 600;
+            font-size: 24px;
+            color: #FFFFFF;
+            margin-bottom: 16px;
+        }
+        p {
+            font-weight: 300;
+            font-size: 20px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>Next Steps: Unlocking the Future of Work</h2>
+            <div class="accent-line"></div>
+            <div class="subtitle">The roadmap to autonomous, secure enterprise productivity.</div>
+        </div>
+        <div class="roadmap-grid">
+            <div class="step">
+                <div class="step-number">01</div>
+                <h3>Pilot Deployment</h3>
+                <p>Connect core teams and establish the initial memory baseline across your primary communication channels.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <h3>Workflow Automation</h3>
+                <p>Activate the Work Detective to identify and automate repetitive tasks based on actual usage patterns.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <h3>Action Execution</h3>
+                <p>Enable audited, reversible actions across connected platforms with strict human-in-the-loop approval.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

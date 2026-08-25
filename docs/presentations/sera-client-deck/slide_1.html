@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 1</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 100px;
+            overflow: hidden;
+        }
+        .header {
+            margin-bottom: 80px;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 28px;
+            color: #A0AABF;
+            max-width: 900px;
+            line-height: 1.5;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 60px;
+            flex-grow: 1;
+        }
+        .column {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 30px;
+        }
+        .icon-wrapper {
+            color: #b9f36b;
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+        h3 {
+            font-weight: 600;
+            font-size: 24px;
+            color: #FFFFFF;
+            margin-bottom: 16px;
+        }
+        p {
+            font-weight: 300;
+            font-size: 20px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>The Problem: Enterprise knowledge is lost in the noise</h2>
+            <div class="accent-line"></div>
+            <div class="subtitle">Modern teams communicate across dozens of channels, losing critical context and repeating manual tasks.</div>
+        </div>
+        <div class="grid-3">
+            <div class="column">
+                <div class="icon-wrapper"><i class="fas fa-network-wired"></i></div>
+                <h3>Fragmented Context</h3>
+                <p>Decisions made in meetings or chat are disconnected from execution, leading to misalignment and lost information.</p>
+            </div>
+            <div class="column">
+                <div class="icon-wrapper"><i class="fas fa-hourglass-half"></i></div>
+                <h3>Invisible Waste</h3>
+                <p>Repetitive workflows and manual data transfers consume hours of high-value employee time weekly.</p>
+            </div>
+            <div class="column">
+                <div class="icon-wrapper"><i class="fas fa-search-minus"></i></div>
+                <h3>The Gap</h3>
+                <p>Existing enterprise tools only search for keywords; they do not understand <em>how</em> work actually happens.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 5</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 80px 100px;
+            overflow: hidden;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 80px;
+            width: 100%;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 24px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .feature-item {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 20px;
+            align-items: start;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+        }
+        .feature-item:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+        .feature-icon {
+            color: #b9f36b;
+            font-size: 32px;
+            padding-top: 4px;
+        }
+        h3 {
+            font-weight: 600;
+            font-size: 24px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        p {
+            font-weight: 300;
+            font-size: 20px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="main-grid">
+            <div class="left-col">
+                <h2>The Dashboard:<br>Your Command Center for Context</h2>
+                <div class="accent-line"></div>
+                <div class="subtitle">A premium, intuitive interface designed for clarity and control.</div>
+            </div>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-plug"></i></div>
+                    <div>
+                        <h3>Connection Management</h3>
+                        <p>Instantly view sync status and manage provider permissions with enterprise-grade security.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-search"></i></div>
+                    <div>
+                        <h3>Memory Search</h3>
+                        <p>Ask natural language questions and receive cited, evidence-backed answers from your connected data.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <div>
+                        <h3>Work Detective</h3>
+                        <p>Review AI-identified automation candidates based on your actual work patterns and approve workflows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

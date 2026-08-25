@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "title": "SERA",
+    "created": 1787651121.688,
+    "last_updated": 1787651283.301,
+    "total_slides": 10
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "slide_1",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "slide_2",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "slide_3",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "slide_4",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "slide_5",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "slide_6",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "slide_7",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "slide_8",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "slide_9",
+      "state": "edited",
+      "pageNum": 10
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "SERA",
+      "summary": "Premium cover slide introducing SERA as the intelligent memory layer for the enterprise.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_1",
+      "title": "The Problem: Enterprise knowledge is lost in the noise",
+      "summary": "Highlights the pain points of fragmented context and invisible manual waste.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_2",
+      "title": "The Solution: A living memory that learns how you work",
+      "summary": "Introduces SERA's core value proposition: Remember, Understand, Detect, Automate.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_3",
+      "title": "Seamless Integration Across the Workspace",
+      "summary": "Showcases the breadth of supported enterprise integrations like Google Workspace and Slack.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_4",
+      "title": "Enterprise-Grade Security & Privacy by Design",
+      "summary": "Emphasizes zero-trust auth, isolated workspaces, and encrypted credentials.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_5",
+      "title": "The Dashboard: Your Command Center for Context",
+      "summary": "Describes the premium UI for connection management, Memory Search, and Work Detective.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_6",
+      "title": "Intelligent Retrieval: Answers, Not Just Links",
+      "summary": "Explains the semantic search and verifiable, cited answers powered by Gemini and Vector RAG.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_7",
+      "title": "Flexible Deployment for Any Scale",
+      "summary": "Outlines the architecture choices: pgvector, Chroma, and Pinecone.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_8",
+      "title": "The Flywheel Effect: Smarter Every Day",
+      "summary": "Illustrates how SERA compounds in value by recognizing patterns and suggesting automations.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_9",
+      "title": "Next Steps: Unlocking the Future of Work",
+      "summary": "Provides a clear roadmap for pilot deployment and workflow automation.",
+      "image_plan": "Use a suitable image if needed"
+    }
+  ]
+}

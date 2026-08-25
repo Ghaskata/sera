@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 6</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 80px 100px;
+            overflow: hidden;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            width: 100%;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 24px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 32px;
+            margin-top: 32px;
+        }
+        .feature-item:first-child {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        .feature-icon {
+            color: #b9f36b;
+            font-size: 32px;
+            margin-right: 32px;
+            margin-top: 4px;
+            width: 40px;
+            text-align: center;
+        }
+        .feature-content h3 {
+            font-weight: 600;
+            font-size: 24px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+        .feature-content p {
+            font-weight: 300;
+            font-size: 20px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="main-grid">
+            <div class="left-col">
+                <h2>Intelligent Retrieval:<br>Answers, Not Just Links</h2>
+                <div class="accent-line"></div>
+                <div class="subtitle">Powered by advanced Vector RAG (Retrieval-Augmented Generation) and Gemini AI.</div>
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="feature-content">
+                        <h3>Semantic Understanding</h3>
+                        <p>Documents and transcripts are intelligently chunked and embedded to capture true meaning, not just keywords.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="feature-content">
+                        <h3>Precision Search</h3>
+                        <p>Retrieves the most relevant context across all connected platforms, filtering by workspace and permissions.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="feature-content">
+                        <h3>Verifiable Output</h3>
+                        <p>Every answer includes direct citations to the source email, meeting, or document, ensuring complete traceability.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

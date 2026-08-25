@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 80px 100px;
+            overflow: hidden;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            width: 100%;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 24px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-content: center;
+        }
+        .pillar {
+            border-left: 2px solid rgba(185, 243, 107, 0.3);
+            padding-left: 24px;
+        }
+        .pillar-icon {
+            color: #b9f36b;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        h3 {
+            font-weight: 600;
+            font-size: 22px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        p {
+            font-weight: 300;
+            font-size: 18px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="main-grid">
+            <div class="left-col">
+                <h2>The Solution:<br>A living memory that learns how you work</h2>
+                <div class="accent-line"></div>
+                <div class="subtitle">SERA is not a chatbot. It is a secure, continuous intelligence layer that observes, remembers, and acts.</div>
+            </div>
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-brain"></i></div>
+                    <h3>Remember</h3>
+                    <p>Ingests context securely across email, chat, meetings, and documents.</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-project-diagram"></i></div>
+                    <h3>Understand</h3>
+                    <p>Connects disparate data points into a cohesive enterprise knowledge graph.</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Detect</h3>
+                    <p>Identifies repetitive patterns and invisible manual work across teams.</p>
+                </div>
+                <div class="pillar">
+                    <div class="pillar-icon"><i class="fas fa-cogs"></i></div>
+                    <h3>Automate</h3>
+                    <p>Proposes intelligent workflows with strict human-in-the-loop approval.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

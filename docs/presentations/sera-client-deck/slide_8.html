@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SERA Slide 8</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #0B132B;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 100px;
+            padding-right: 100px;
+            overflow: hidden;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 80px;
+            width: 100%;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h2 {
+            font-weight: 600;
+            font-size: 48px;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .accent-line {
+            width: 80px;
+            height: 3px;
+            background-color: #b9f36b;
+            margin-bottom: 24px;
+        }
+        .subtitle {
+            font-weight: 300;
+            font-size: 24px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 40px;
+        }
+        .flywheel-item {
+            display: flex;
+            flex-direction: column;
+            border-left: 3px solid #b9f36b;
+            padding-left: 30px;
+        }
+        .flywheel-title {
+            font-weight: 600;
+            font-size: 26px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .flywheel-title i {
+            color: #b9f36b;
+            font-size: 24px;
+        }
+        .flywheel-desc {
+            font-weight: 300;
+            font-size: 20px;
+            color: #A0AABF;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="main-grid">
+            <div class="left-col">
+                <h2>The Flywheel Effect:<br>Smarter Every Day</h2>
+                <div class="accent-line"></div>
+                <div class="subtitle">As SERA observes more of your work, its value compounds exponentially.</div>
+            </div>
+            <div class="right-col">
+                <div class="flywheel-item">
+                    <div class="flywheel-title"><i class="fas fa-database"></i> Richer Context</div>
+                    <div class="flywheel-desc">Answers become more precise and comprehensive as the memory layer grows with your organization.</div>
+                </div>
+                <div class="flywheel-item">
+                    <div class="flywheel-title"><i class="fas fa-chart-line"></i> Pattern Recognition</div>
+                    <div class="flywheel-desc">The system evolves from answering questions to proactively suggesting optimizations based on observed behavior.</div>
+                </div>
+                <div class="flywheel-item">
+                    <div class="flywheel-title"><i class="fas fa-rocket"></i> The Ultimate Goal</div>
+                    <div class="flywheel-desc">Moving from "What happened?" to "Here is what I automated for you."</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
