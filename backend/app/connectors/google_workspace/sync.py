@@ -13,6 +13,7 @@ from app.connectors.google_drive.sync import _persist_refreshed_credentials
 from app.crypto import decrypt_tokens
 from app.models.connector import Connector
 from app.services.ingestion import index_text_document
+from app.services.meetings import upsert_meeting
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,14 @@ def _parse_rfc3339(value: str | None) -> datetime:
         return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
     except ValueError:
         return datetime.now(timezone.utc)
+
+
+def _parse_event_datetime(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    if len(value) == 10:
+        return datetime.fromisoformat(value).replace(tzinfo=timezone.utc)
+    return _parse_rfc3339(value)
 
 
 async def _credentials_for_connector(session: AsyncSession, connector: Connector) -> Credentials:
@@ -152,25 +161,56 @@ async def run_calendar_sync(session: AsyncSession, connector: Connector, max_eve
         end = event.get("end", {})
         start_value = start.get("dateTime") or start.get("date")
         end_value = end.get("dateTime") or end.get("date")
-        attendees = ", ".join(item.get("email", "") for item in event.get("attendees", []))
+        starts_at = _parse_event_datetime(start_value)
+        ends_at = _parse_event_datetime(end_value)
+        attendees = [
+            {
+                "email": item.get("email"),
+                "display_name": item.get("displayName"),
+                "response_status": item.get("responseStatus"),
+                "organizer": item.get("organizer", False),
+            }
+            for item in event.get("attendees", [])
+        ]
+        attendee_text = ", ".join(item.get("email", "") for item in attendees if item.get("email"))
+        conference_entries = event.get("conferenceData", {}).get("entryPoints", [])
+        join_url = next(
+            (entry.get("uri") for entry in conference_entries if entry.get("entryPointType") == "video"),
+            None,
+        )
+        title = event.get("summary", "Calendar event")
         text = (
-            f"Event: {event.get('summary', 'Untitled event')}\n"
+            f"Event: {title}\n"
             f"Start: {start_value}\nEnd: {end_value}\n"
             f"Location: {event.get('location', '')}\n"
-            f"Attendees: {attendees}\n\n{event.get('description', '')}"
+            f"Attendees: {attendee_text}\n\n{event.get('description', '')}"
+        )
+        await upsert_meeting(
+            session,
+            connector,
+            provider=GOOGLE_CALENDAR,
+            external_id=event["id"],
+            title=title,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            organizer=next((item.get("email") for item in attendees if item.get("organizer")), None),
+            join_url=join_url,
+            source_url=event.get("htmlLink"),
+            attendees=attendees,
+            metadata={"calendar_event_id": event["id"], "start_raw": start_value, "end_raw": end_value},
         )
         await index_text_document(
             session,
             connector,
             external_id=event["id"],
-            title=event.get("summary", "Calendar event"),
+            title=title,
             text=text,
             mime_type="text/calendar",
             updated_at=_parse_rfc3339(event.get("updated")),
             source="Google Calendar",
             source_url=event.get("htmlLink"),
-            person=attendees or None,
-            extra_metadata={"start": start_value, "end": end_value},
+            person=attendee_text or None,
+            extra_metadata={"start": start_value, "end": end_value, "join_url": join_url},
         )
         indexed += 1
     connector.last_sync_at = datetime.now(timezone.utc)

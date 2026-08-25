@@ -14,6 +14,7 @@ SCOPES_BY_PROVIDER = {
     "google_drive": (*GOOGLE_IDENTITY_SCOPES, "https://www.googleapis.com/auth/drive.readonly"),
     "google_gmail": (*GOOGLE_IDENTITY_SCOPES, "https://www.googleapis.com/auth/gmail.readonly"),
     "google_calendar": (*GOOGLE_IDENTITY_SCOPES, "https://www.googleapis.com/auth/calendar.readonly"),
+    "google_meet": (*GOOGLE_IDENTITY_SCOPES, "https://www.googleapis.com/auth/meetings.space.readonly"),
 }
 # Backwards-compatible name used by the original Drive connector.
 SCOPES = list(SCOPES_BY_PROVIDER["google_drive"])

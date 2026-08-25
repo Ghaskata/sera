@@ -5,7 +5,10 @@ from sqlalchemy import select
 
 from app.config import settings
 from app.connectors.google_drive.sync import run_incremental_sync
+from app.connectors.google_workspace.meet_sync import run_google_meet_sync
 from app.connectors.google_workspace.sync import run_calendar_sync, run_gmail_sync
+from app.connectors.microsoft_teams.sync import run_teams_sync
+from app.connectors.slack.sync import run_slack_sync
 from app.database import async_session_factory
 from app.models.connector import Connector, ConnectorStatus
 
@@ -30,6 +33,12 @@ async def _sync_all_connected_sources() -> None:
                     await run_gmail_sync(session, connector)
                 elif connector.provider == "google_calendar":
                     await run_calendar_sync(session, connector)
+                elif connector.provider == "google_meet":
+                    await run_google_meet_sync(session, connector, settings.meeting_sync_max_records)
+                elif connector.provider == "slack":
+                    await run_slack_sync(session, connector)
+                elif connector.provider == "microsoft_teams":
+                    await run_teams_sync(session, connector, settings.meeting_sync_max_records)
             except Exception:
                 logger.exception("Incremental sync failed for connector %s", connector.id)
 

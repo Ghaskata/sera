@@ -6,7 +6,12 @@ from telegram.ext import ContextTypes
 
 from app.connectors.google_drive.oauth import build_authorization_url
 from app.connectors.google_drive.sync import run_full_sync
+from app.connectors.google_workspace.meet_sync import run_google_meet_sync
 from app.connectors.google_workspace.sync import run_calendar_sync, run_gmail_sync
+from app.connectors.microsoft_teams.oauth import build_microsoft_authorization_url
+from app.connectors.microsoft_teams.sync import run_teams_sync
+from app.connectors.slack.oauth import build_slack_authorization_url
+from app.connectors.slack.sync import run_slack_sync
 from app.database import async_session_factory
 from app.models.connector import Connector, ConnectorStatus
 from app.models.work_intelligence import AutomationCandidate
@@ -15,6 +20,7 @@ from app.services.connectors import (
     GOOGLE_CALENDAR,
     GOOGLE_DRIVE,
     GOOGLE_GMAIL,
+    GOOGLE_MEET,
     get_or_create_pending_connector,
 )
 from app.services.oauth_state import create_oauth_state
@@ -72,6 +78,36 @@ async def connect_gmail(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def connect_calendar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     auth_url = await _google_login_url(update.effective_user, GOOGLE_CALENDAR)
     await update.message.reply_text(f"Connect Google Calendar:\n{auth_url}")
+
+
+async def connect_meet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _google_login_url(update.effective_user, GOOGLE_MEET)
+    await update.message.reply_text(f"Connect Google Meet meeting history and transcripts:\n{auth_url}")
+
+
+async def _external_login_url(tg_user, provider: str, builder) -> str:
+    async with async_session_factory() as session:
+        user, _ = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        oauth_state = await create_oauth_state(session, user.id, provider=provider)
+        return builder(oauth_state.state)
+
+
+async def connect_slack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _external_login_url(update.effective_user, "slack", build_slack_authorization_url)
+    await update.message.reply_text(
+        "Connect a Slack workspace with read-only channel history access:\n" f"{auth_url}"
+    )
+
+
+async def connect_teams(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _external_login_url(
+        update.effective_user,
+        "microsoft_teams",
+        build_microsoft_authorization_url,
+    )
+    await update.message.reply_text(
+        "Connect Microsoft Teams with read-only calendar and meeting-transcript access:\n" f"{auth_url}"
+    )
 
 
 async def connect_drive(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -168,7 +204,7 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _split_and_send(update, text)
 
 
-async def trigger_google_sync_and_notify(
+async def trigger_connector_sync_and_notify(
     connector_id,
     telegram_user_id: int,
     provider: str = GOOGLE_DRIVE,
@@ -182,21 +218,29 @@ async def trigger_google_sync_and_notify(
                 await run_gmail_sync(session, connector)
             elif provider == GOOGLE_CALENDAR:
                 await run_calendar_sync(session, connector)
+            elif provider == GOOGLE_MEET:
+                await run_google_meet_sync(session, connector)
+            elif provider == "slack":
+                await run_slack_sync(session, connector)
+            elif provider == "microsoft_teams":
+                await run_teams_sync(session, connector)
             else:
                 await run_full_sync(session, connector)
         except Exception:
-            logger.exception("Initial Google sync failed for connector %s", connector_id)
+            logger.exception("Initial %s sync failed for connector %s", provider, connector_id)
 
     bot = get_bot()
     if bot is not None:
         await bot.send_message(
             chat_id=telegram_user_id,
             text=(
-                "Google account connected. Your source has been indexed or is still processing. "
+                f"{provider.replace('_', ' ').title()} connected. Your source has been indexed "
+                "or is still processing. "
                 "Ask me anything!"
             ),
         )
 
 
-# Backwards-compatible name used by the original Drive callback.
-trigger_sync_and_notify = trigger_google_sync_and_notify
+# Backwards-compatible names used by existing callback code.
+trigger_google_sync_and_notify = trigger_connector_sync_and_notify
+trigger_sync_and_notify = trigger_connector_sync_and_notify

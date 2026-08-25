@@ -18,7 +18,17 @@ class Settings(BaseSettings):
 
     token_encryption_key: str = ""
 
+    slack_client_id: str = ""
+    slack_client_secret: str = ""
+    slack_oauth_redirect_uri: str = "http://localhost:8000/oauth/slack/callback"
+
+    microsoft_client_id: str = ""
+    microsoft_client_secret: str = ""
+    microsoft_tenant_id: str = "common"
+    microsoft_oauth_redirect_uri: str = "http://localhost:8000/oauth/microsoft/callback"
+
     drive_sync_interval_minutes: int = 15
+    meeting_sync_max_records: int = 100
 
     rag_min_similarity: float = 0.55
     rag_top_k: int = 5
