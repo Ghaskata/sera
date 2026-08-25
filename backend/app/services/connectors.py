@@ -7,6 +7,8 @@ from app.crypto import encrypt_tokens
 from app.models.connector import Connector, ConnectorStatus
 
 GOOGLE_DRIVE = "google_drive"
+GOOGLE_GMAIL = "google_gmail"
+GOOGLE_CALENDAR = "google_calendar"
 
 
 async def get_connector(session: AsyncSession, workspace_id: uuid.UUID, provider: str) -> Connector | None:

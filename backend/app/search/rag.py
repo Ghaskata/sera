@@ -16,7 +16,11 @@ NO_CONTEXT_ANSWER = "I couldn't find relevant information in your connected sour
 @dataclass
 class Source:
     title: str
-    drive_link: str | None
+    drive_link: str | None = None
+    source: str | None = None
+    date: str | None = None
+    person: str | None = None
+    url: str | None = None
 
 
 @dataclass
@@ -42,15 +46,28 @@ async def answer_question(session: AsyncSession, workspace_id: uuid.UUID, questi
     if not relevant:
         result = RagResult(answer=NO_CONTEXT_ANSWER, sources=[])
     else:
+        # Keep the LLM context limited to text so existing retrieval behavior is
+        # stable; metadata is exposed separately as auditable citations.
         answer = await generate_answer(question, [chunk.text for chunk, _ in relevant])
         seen = set()
         sources = []
         for chunk, _ in relevant:
-            title = chunk.chunk_metadata.get("title", "source")
-            if title in seen:
+            metadata = chunk.chunk_metadata or {}
+            title = metadata.get("title", "source")
+            source_key = (title, metadata.get("date"), metadata.get("url"), metadata.get("drive_link"))
+            if source_key in seen:
                 continue
-            seen.add(title)
-            sources.append(Source(title=title, drive_link=chunk.chunk_metadata.get("drive_link")))
+            seen.add(source_key)
+            sources.append(
+                Source(
+                    title=title,
+                    drive_link=metadata.get("drive_link"),
+                    source=metadata.get("source"),
+                    date=metadata.get("date"),
+                    person=metadata.get("person"),
+                    url=metadata.get("url"),
+                )
+            )
         result = RagResult(answer=answer, sources=sources)
 
     session.add(
@@ -59,7 +76,17 @@ async def answer_question(session: AsyncSession, workspace_id: uuid.UUID, questi
             workspace_id=workspace_id,
             question=question,
             answer=result.answer,
-            sources=[{"title": s.title, "drive_link": s.drive_link} for s in result.sources],
+            sources=[
+                {
+                    "title": s.title,
+                    "drive_link": s.drive_link,
+                    "source": s.source,
+                    "date": s.date,
+                    "person": s.person,
+                    "url": s.url,
+                }
+                for s in result.sources
+            ],
         )
     )
     await session.commit()

@@ -1,39 +1,45 @@
-# Sera Backend — Telegram RAG MVP
+# Sera Backend — Telegram-First Personal Assistant
 
-FastAPI modular monolith backend for Sera's first buildable slice: a Telegram
-bot that answers questions using each user's Google Drive files (RAG). See
-`../docs/superpowers/specs/2026-08-06-telegram-rag-mvp-design.md` for the
-full design.
+Sera is a Telegram-first personal work-and-life assistant. The backend is a FastAPI modular monolith that owns identity, workspaces, connector credentials, ingestion, memory retrieval, and the Telegram interface.
+
+## Week-one product slice
+
+The first production-oriented slice does four things well:
+
+1. Creates a pending Sera account from Telegram.
+2. Requires Google sign-in before private workspace data is used.
+3. Stores encrypted Google OAuth credentials and indexes read-only Google Drive files.
+4. Answers Telegram questions with Gemini using workspace-scoped retrieved context and source citations.
+
+Google sign-in and Google Drive access are implemented together in the first flow. Gmail and Calendar use the same Google account family but are intentionally staged next, because each additional data scope increases consent and verification requirements. Slack and Microsoft Teams require their own provider-specific OAuth flows. Google Maps requires a separate API-key-based integration, and Google Keep/Notes and Meet transcripts are planned connector modules rather than being silently treated as available through Drive login.
 
 ## Prerequisites
 
-- Python 3.12
+- Python 3.12+
 - Docker (for Postgres + pgvector)
-- A Telegram bot token (from [@BotFather](https://t.me/BotFather))
-- A Google Cloud OAuth client (Web application type) with the Drive API
-  enabled, and a **Gemini API key**
-- For local OAuth testing: an ngrok/cloudflared tunnel, since Google OAuth
-  requires a public HTTPS redirect URI
+- A Telegram bot token from [@BotFather](https://t.me/BotFather)
+- A Google Cloud OAuth client (Web application type) with the Drive API enabled
+- A Gemini API key
+- For local OAuth testing: an ngrok or cloudflared HTTPS tunnel
 
 ## Setup
 
 ```bash
 cd backend
 python -m venv .venv
-.venv/Scripts/activate        # .venv/bin/activate on macOS/Linux
+source .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
-# start Postgres+pgvector
-docker compose up -d
-
+docker compose up -d db
 cp .env.example .env
-# fill in TELEGRAM_BOT_TOKEN, GOOGLE_CLIENT_ID/SECRET, GEMINI_API_KEY,
-# GOOGLE_OAUTH_REDIRECT_URI (your tunnel URL), and generate a
-# TOKEN_ENCRYPTION_KEY:
+# Fill in TELEGRAM_BOT_TOKEN, GOOGLE_CLIENT_ID/SECRET,
+# GEMINI_API_KEY, GOOGLE_OAUTH_REDIRECT_URI, and TOKEN_ENCRYPTION_KEY.
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-
 alembic upgrade head
 ```
+
+Google OAuth requires a public HTTPS callback URI. During local development, run the backend on port 8000, expose it through a tunnel, and register the exact tunnel callback URL in Google Cloud Console and `GOOGLE_OAUTH_REDIRECT_URI`.
 
 ## Run
 
@@ -41,36 +47,31 @@ alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
-This single process serves the FastAPI app (health check + the Google OAuth
-callback) **and** runs the Telegram bot via long polling, so the OAuth
-callback can notify the right Telegram user when a Drive connection finishes
-syncing.
-
-In Telegram: `/start`, then `/connect_drive`, complete the Google consent
-screen, then just ask a question.
+The process serves the FastAPI health check and Google OAuth callback, runs Telegram long polling, and runs the incremental Google-source sync scheduler. In Telegram, send `/start`, tap the Google sign-in link, approve the requested read-only permissions, and then ask a question. `/login` and `/connect_google` can be used to start the flow again; `/connect_drive` remains as a compatibility alias. After the initial connection, `/connect_gmail` and `/connect_calendar` request their narrower provider-specific scopes. `/insights` reports detected repeated work, and `/why <action-key>` explains a candidate’s frequency and time metrics.
 
 ## Project layout
 
-```
+```text
 app/
-  models/           # SQLAlchemy models — users, workspaces, connectors, documents, chunks, queries_log
-  services/         # accounts, connectors, chunking, embeddings (Gemini), llm (Gemini)
-  connectors/google_drive/   # OAuth, sync (full + incremental via changes.list), text extraction
-  search/rag.py     # embed question → pgvector similarity search → Gemini answer → citations
-  telegram_bot/     # bot wiring + command/message handlers
-  api/routes/       # health check, Google OAuth callback
-  scheduler.py      # APScheduler job: incremental Drive sync every N minutes
-  main.py           # FastAPI app + lifespan (starts bot polling + scheduler)
+  api/routes/               # health and Google OAuth callback
+  connectors/catalog.py     # implemented and staged provider capabilities
+  connectors/google_drive/  # OAuth, sync, extraction
+  models/                   # users, workspaces, connectors, documents, chunks, OAuth state
+  services/                 # account linking, encrypted tokens, chunking, embeddings, Gemini
+  search/rag.py             # workspace-scoped retrieval and cited answers
+  telegram_bot/             # onboarding, Google sign-in, and question handlers
+  scheduler.py              # periodic incremental Google-source sync
+alembic/versions/           # schema migrations
 ```
 
-## Notes
+## Security model
 
-- Every DB row scoped by `workspace_id`; the Telegram RAG flow currently
-  maps 1 Telegram user → 1 default workspace, but nothing in the schema
-  assumes that stays true.
-- Answers are grounded only in retrieved chunks above `RAG_MIN_SIMILARITY`;
-  if nothing clears the bar, the bot says so instead of letting Gemini
-  answer ungrounded.
-- Out of scope for this slice (see design doc): any connector besides
-  Google Drive, Daily Briefing/autonomous runs, multi-workspace-per-user,
-  OCR, Celery/Redis.
+OAuth state is a cryptographically random, short-lived, one-time value stored server-side and tied to the initiating Telegram user. Google profile identity is fetched from Google’s OpenID userinfo endpoint after token exchange. OAuth tokens are encrypted at rest. Every retrieval is scoped by the user’s workspace. No external write action is implemented or executed in this slice.
+
+## Verification
+
+```bash
+pytest -q
+```
+
+The current suite covers chunking, embedding calls, token refresh persistence, RAG workspace isolation/citation behavior, OAuth-state expiry, provider-specific Google scopes, and work-pattern metrics. The schema migrations for Google identity/OAuth states and work intelligence are `1f2c3d4e5f6a_google_identity_oauth_state.py` and `2a3b4c5d6e7f_work_intelligence.py`.

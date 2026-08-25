@@ -1,16 +1,26 @@
 import logging
 
+from sqlalchemy import select
 from telegram import Update
 from telegram.ext import ContextTypes
 
 from app.connectors.google_drive.oauth import build_authorization_url
 from app.connectors.google_drive.sync import run_full_sync
+from app.connectors.google_workspace.sync import run_calendar_sync, run_gmail_sync
 from app.database import async_session_factory
 from app.models.connector import Connector, ConnectorStatus
+from app.models.work_intelligence import AutomationCandidate
 from app.services.accounts import get_or_create_user_and_workspace
-from app.services.connectors import GOOGLE_DRIVE, get_or_create_pending_connector
+from app.services.connectors import (
+    GOOGLE_CALENDAR,
+    GOOGLE_DRIVE,
+    GOOGLE_GMAIL,
+    get_or_create_pending_connector,
+)
+from app.services.oauth_state import create_oauth_state
 from app.search.rag import answer_question
 from app.telegram_bot.registry import get_bot
+from app.services.work_intelligence import detect_automation_candidates, explain_candidate
 
 logger = logging.getLogger(__name__)
 
@@ -22,27 +32,110 @@ async def _split_and_send(update: Update, text: str) -> None:
         await update.message.reply_text(text[i : i + TELEGRAM_MESSAGE_LIMIT])
 
 
+async def _google_login_url(tg_user, provider: str = GOOGLE_DRIVE) -> str:
+    async with async_session_factory() as session:
+        user, _ = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        oauth_state = await create_oauth_state(session, user.id, provider=provider)
+        return build_authorization_url(state=oauth_state.state, provider=provider)
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tg_user = update.effective_user
     async with async_session_factory() as session:
-        await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        user, _ = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+
+    if user.google_sub is None:
+        auth_url = await _google_login_url(tg_user)
+        await update.message.reply_text(
+            "Welcome to Sera. Sera needs your Google sign-in before it can safely understand your work context.\n\n"
+            f"Tap this link to continue:\n{auth_url}\n\n"
+            "After approval, return here and ask your question."
+        )
+        return
 
     await update.message.reply_text(
-        "Welcome to Sera. I can answer questions using your Google Drive files.\n\n"
-        "Run /connect_drive to connect your Google Drive, then just ask me anything."
+        "Welcome back to Sera. Your Google account is connected.\n\n"
+        "Ask me what happened, where something is documented, or what was decided."
     )
 
 
+async def login_google(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _google_login_url(update.effective_user)
+    await update.message.reply_text(f"Sign in with Google to connect Sera:\n{auth_url}")
+
+
+async def connect_gmail(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _google_login_url(update.effective_user, GOOGLE_GMAIL)
+    await update.message.reply_text(f"Connect Gmail with Google:\n{auth_url}")
+
+
+async def connect_calendar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _google_login_url(update.effective_user, GOOGLE_CALENDAR)
+    await update.message.reply_text(f"Connect Google Calendar:\n{auth_url}")
+
+
 async def connect_drive(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # Backwards-compatible command; Google login and Drive consent are combined
+    # in the first product slice.
+    await login_google(update, context)
+
+
+async def insights(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    tg_user = update.effective_user
+    async with async_session_factory() as session:
+        user, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        if user.google_sub is None:
+            await update.message.reply_text("Please complete Google sign-in first with /login.")
+            return
+        candidates = await detect_automation_candidates(session, workspace.id)
+
+    if not candidates:
+        await update.message.reply_text(
+            "I do not have enough repeated activity yet to identify an automation opportunity. "
+            "Keep using your connected sources and try /insights again later."
+        )
+        return
+
+    lines = ["Work patterns I noticed:"]
+    for candidate in candidates:
+        info = explain_candidate(candidate)
+        lines.append(
+            f"\n{candidate.name}\n"
+            f"• {info['frequency']} times · {info['total_hours']} hours total · "
+            f"~{info['average_minutes']} min each\n"
+            f"• First: {info['first_detected']} · Last: {info['last_performed']}\n"
+            f"• Use /why {candidate.action_key} for details."
+        )
+    await _split_and_send(update, "\n".join(lines))
+
+
+async def why(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    action_key = context.args[0] if context.args else None
+    if not action_key:
+        await update.message.reply_text("Usage: /why <action-key>. Start with /insights to see detected work patterns.")
+        return
+
     tg_user = update.effective_user
     async with async_session_factory() as session:
         _, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
-        connector = await get_or_create_pending_connector(session, workspace.id, GOOGLE_DRIVE)
+        candidate = await session.scalar(
+            select(AutomationCandidate).where(
+                AutomationCandidate.workspace_id == workspace.id,
+                AutomationCandidate.action_key == action_key,
+            )
+        )
+    if candidate is None:
+        await update.message.reply_text("I could not find that work pattern in your workspace.")
+        return
 
-    # state carries the connector id so the OAuth callback knows which
-    # connector + which Telegram user to notify once the flow completes.
-    auth_url = build_authorization_url(state=str(connector.id))
-    await update.message.reply_text(f"Connect your Google Drive:\n{auth_url}")
+    info = explain_candidate(candidate)
+    await update.message.reply_text(
+        f"{candidate.name}\n\n{info['message']}\n"
+        f"First detected: {info['first_detected']}\n"
+        f"Last performed: {info['last_performed']}\n"
+        f"Total time: {info['total_hours']} hours\n\n"
+        "This can likely be automated, but Sera will ask for approval before any external action."
+    )
 
 
 async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -50,32 +143,60 @@ async def ask(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     question = update.message.text
 
     async with async_session_factory() as session:
-        _, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        user, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
         connector = await get_or_create_pending_connector(session, workspace.id, GOOGLE_DRIVE)
-        if connector.status != ConnectorStatus.CONNECTED:
-            await update.message.reply_text("Connect your Google Drive first with /connect_drive.")
+        if user.google_sub is None or connector.status != ConnectorStatus.CONNECTED:
+            auth_url = await _google_login_url(tg_user)
+            await update.message.reply_text("Please complete Google sign-in first.\n\n" f"{auth_url}")
             return
 
         result = await answer_question(session, workspace.id, question)
 
     text = result.answer
     if result.sources:
-        text += "\n\nSources:\n" + "\n".join(
-            f"- {s.title}" + (f" ({s.drive_link})" if s.drive_link else "") for s in result.sources
-        )
+        source_lines = []
+        for source in result.sources:
+            details = [value for value in (source.source, source.date, source.person) if value]
+            label = f"- {source.title}"
+            if details:
+                label += f" — {' · '.join(details)}"
+            link = source.url or source.drive_link
+            if link:
+                label += f" ({link})"
+            source_lines.append(label)
+        text += "\n\nSources:\n" + "\n".join(source_lines)
     await _split_and_send(update, text)
 
 
-async def trigger_sync_and_notify(connector_id, telegram_user_id: int) -> None:
+async def trigger_google_sync_and_notify(
+    connector_id,
+    telegram_user_id: int,
+    provider: str = GOOGLE_DRIVE,
+) -> None:
     async with async_session_factory() as session:
         connector = await session.get(Connector, connector_id)
         if connector is None:
             return
         try:
-            await run_full_sync(session, connector)
+            if provider == GOOGLE_GMAIL:
+                await run_gmail_sync(session, connector)
+            elif provider == GOOGLE_CALENDAR:
+                await run_calendar_sync(session, connector)
+            else:
+                await run_full_sync(session, connector)
         except Exception:
-            logger.exception("Initial Drive sync failed for connector %s", connector_id)
+            logger.exception("Initial Google sync failed for connector %s", connector_id)
 
     bot = get_bot()
     if bot is not None:
-        await bot.send_message(chat_id=telegram_user_id, text="Google Drive connected and indexed. Ask me anything!")
+        await bot.send_message(
+            chat_id=telegram_user_id,
+            text=(
+                "Google account connected. Your source has been indexed or is still processing. "
+                "Ask me anything!"
+            ),
+        )
+
+
+# Backwards-compatible name used by the original Drive callback.
+trigger_sync_and_notify = trigger_google_sync_and_notify

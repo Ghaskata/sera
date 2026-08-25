@@ -9,7 +9,13 @@ def build_application() -> Application:
     application = Application.builder().token(settings.telegram_bot_token).build()
 
     application.add_handler(CommandHandler("start", handlers.start))
+    application.add_handler(CommandHandler("login", handlers.login_google))
+    application.add_handler(CommandHandler("connect_google", handlers.login_google))
+    application.add_handler(CommandHandler("connect_gmail", handlers.connect_gmail))
+    application.add_handler(CommandHandler("connect_calendar", handlers.connect_calendar))
     application.add_handler(CommandHandler("connect_drive", handlers.connect_drive))
+    application.add_handler(CommandHandler("insights", handlers.insights))
+    application.add_handler(CommandHandler("why", handlers.why))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handlers.ask))
 
     set_bot(application.bot)
