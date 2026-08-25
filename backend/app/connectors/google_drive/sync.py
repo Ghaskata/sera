@@ -3,6 +3,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from sqlalchemy import select
@@ -26,9 +27,13 @@ def _build_drive_service(creds: Credentials):
     return build("drive", "v3", credentials=creds)
 
 
-async def _get_credentials(connector: Connector) -> Credentials:
+async def _get_credentials(session: AsyncSession, connector: Connector) -> Credentials:
     tokens = decrypt_tokens(connector.oauth_tokens_encrypted)
-    return credentials_from_dict(tokens)
+    creds = credentials_from_dict(tokens)
+    if creds.expired and creds.refresh_token:
+        await asyncio.to_thread(creds.refresh, Request())
+        await _persist_refreshed_credentials(session, connector, creds)
+    return creds
 
 
 async def _persist_refreshed_credentials(session: AsyncSession, connector: Connector, creds: Credentials) -> None:
@@ -103,7 +108,7 @@ async def _process_file(session: AsyncSession, connector: Connector, drive_servi
 
 
 async def run_full_sync(session: AsyncSession, connector: Connector) -> None:
-    creds = await _get_credentials(connector)
+    creds = await _get_credentials(session, connector)
     drive_service = await asyncio.to_thread(_build_drive_service, creds)
     await _persist_refreshed_credentials(session, connector, creds)
 
@@ -132,7 +137,7 @@ async def run_incremental_sync(session: AsyncSession, connector: Connector) -> N
         await run_full_sync(session, connector)
         return
 
-    creds = await _get_credentials(connector)
+    creds = await _get_credentials(session, connector)
     drive_service = await asyncio.to_thread(_build_drive_service, creds)
     await _persist_refreshed_credentials(session, connector, creds)
 

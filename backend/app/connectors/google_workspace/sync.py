@@ -2,14 +2,14 @@ import asyncio
 import base64
 import logging
 from datetime import datetime, timedelta, timezone
-from email import policy
-from email.parser import BytesParser
 
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.connectors.google_drive.oauth import credentials_from_dict
+from app.connectors.google_drive.sync import _persist_refreshed_credentials
 from app.crypto import decrypt_tokens
 from app.models.connector import Connector
 from app.services.ingestion import index_text_document
@@ -24,37 +24,80 @@ def _build_service(api_name: str, version: str, creds: Credentials):
     return build(api_name, version, credentials=creds)
 
 
+def _decode_base64url(data: str) -> str:
+    padding = "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode((data + padding).encode()).decode(errors="replace")
+
+
 def _parse_message_body(payload: dict) -> str:
     data = payload.get("body", {}).get("data")
     if data:
-        return base64.urlsafe_b64decode(data.encode()).decode(errors="replace")
-    return "\n".join(_parse_message_body(part) for part in payload.get("parts", []))
+        return _decode_base64url(data)
+    return "\n".join(
+        part_text
+        for part in payload.get("parts", [])
+        if (part_text := _parse_message_body(part)).strip()
+    )
 
 
 def _header(headers: list[dict], name: str) -> str:
-    return next((item.get("value", "") for item in headers if item.get("name", "").lower() == name.lower()), "")
+    return next(
+        (item.get("value", "") for item in headers if item.get("name", "").lower() == name.lower()),
+        "",
+    )
 
 
 def _parse_rfc3339(value: str | None) -> datetime:
     if not value:
         return datetime.now(timezone.utc)
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
     except ValueError:
         return datetime.now(timezone.utc)
 
 
+async def _credentials_for_connector(session: AsyncSession, connector: Connector) -> Credentials:
+    creds = credentials_from_dict(decrypt_tokens(connector.oauth_tokens_encrypted))
+    if creds.expired and creds.refresh_token:
+        await asyncio.to_thread(creds.refresh, Request())
+        await _persist_refreshed_credentials(session, connector, creds)
+    return creds
+
+
+async def _list_gmail_messages(service, max_messages: int) -> list[dict]:
+    refs: list[dict] = []
+    page_token = None
+    while len(refs) < max_messages:
+        response = await asyncio.to_thread(
+            lambda token=page_token: service.users()
+            .messages()
+            .list(
+                userId="me",
+                maxResults=min(100, max_messages - len(refs)),
+                pageToken=token,
+                q="newer_than:180d",
+            )
+            .execute()
+        )
+        refs.extend(response.get("messages", []))
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            break
+    return refs[:max_messages]
+
+
 async def run_gmail_sync(session: AsyncSession, connector: Connector, max_messages: int = 100) -> int:
-    tokens = decrypt_tokens(connector.oauth_tokens_encrypted)
-    creds = credentials_from_dict(tokens)
+    creds = await _credentials_for_connector(session, connector)
     service = await asyncio.to_thread(_build_service, "gmail", "v1", creds)
-    response = await asyncio.to_thread(
-        lambda: service.users().messages().list(userId="me", maxResults=max_messages, q="newer_than:180d").execute()
-    )
+    message_refs = await _list_gmail_messages(service, max_messages)
     indexed = 0
-    for message_ref in response.get("messages", []):
+    for message_ref in message_refs:
         message = await asyncio.to_thread(
-            lambda ref=message_ref: service.users().messages().get(userId="me", id=ref["id"], format="full").execute()
+            lambda ref=message_ref: service.users()
+            .messages()
+            .get(userId="me", id=ref["id"], format="full")
+            .execute()
         )
         payload = message.get("payload", {})
         headers = payload.get("headers", [])
@@ -88,8 +131,7 @@ async def run_gmail_sync(session: AsyncSession, connector: Connector, max_messag
 
 
 async def run_calendar_sync(session: AsyncSession, connector: Connector, max_events: int = 100) -> int:
-    tokens = decrypt_tokens(connector.oauth_tokens_encrypted)
-    creds = credentials_from_dict(tokens)
+    creds = await _credentials_for_connector(session, connector)
     service = await asyncio.to_thread(_build_service, "calendar", "v3", creds)
     now = datetime.now(timezone.utc)
     response = await asyncio.to_thread(

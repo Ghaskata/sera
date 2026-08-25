@@ -11,14 +11,14 @@ The first production-oriented slice does four things well:
 3. Stores encrypted Google OAuth credentials and indexes read-only Google Drive files.
 4. Answers Telegram questions with Gemini using workspace-scoped retrieved context and source citations.
 
-Google sign-in and Google Drive access are implemented together in the first flow. Gmail and Calendar use the same Google account family but are intentionally staged next, because each additional data scope increases consent and verification requirements. Slack and Microsoft Teams require their own provider-specific OAuth flows. Google Maps requires a separate API-key-based integration, and Google Keep/Notes and Meet transcripts are planned connector modules rather than being silently treated as available through Drive login.
+Google sign-in and Google Drive access are implemented together in the first flow. Gmail is available through `/connect_gmail` with a separate read-only consent flow and incremental indexing. Google Calendar is also available through `/connect_calendar`; Slack and Microsoft Teams require their own provider-specific OAuth flows. Google Maps requires a separate API-key-based integration, and Google Keep/Notes and Meet transcripts are planned connector modules rather than being silently treated as available through Drive login.
 
 ## Prerequisites
 
 - Python 3.12+
 - Docker (for Postgres + pgvector)
 - A Telegram bot token from [@BotFather](https://t.me/BotFather)
-- A Google Cloud OAuth client (Web application type) with the Drive API enabled
+- A Google Cloud OAuth client (Web application type) with the Drive API enabled; enable Gmail API and Calendar API if those commands are needed
 - A Gemini API key
 - For local OAuth testing: an ngrok or cloudflared HTTPS tunnel
 
@@ -55,7 +55,8 @@ The process serves the FastAPI health check and Google OAuth callback, runs Tele
 app/
   api/routes/               # health and Google OAuth callback
   connectors/catalog.py     # implemented and staged provider capabilities
-  connectors/google_drive/  # OAuth, sync, extraction
+  connectors/google_drive/  # Google OAuth, Drive sync, extraction
+  connectors/google_workspace/ # Gmail and Calendar read-only sync
   models/                   # users, workspaces, connectors, documents, chunks, OAuth state
   services/                 # account linking, encrypted tokens, chunking, embeddings, Gemini
   search/rag.py             # workspace-scoped retrieval and cited answers
