@@ -18,7 +18,7 @@ from app.telegram_bot.handlers import trigger_connector_sync_and_notify
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-SUPPORTED_GOOGLE_PROVIDERS = {"google_drive", "google_gmail", "google_calendar", "google_meet"}
+SUPPORTED_GOOGLE_PROVIDERS = {"google_drive", "google_gmail", "google_calendar", "google_meet", "google_keep"}
 SUPPORTED_PROVIDERS = SUPPORTED_GOOGLE_PROVIDERS | {"slack", "microsoft_teams"}
 
 

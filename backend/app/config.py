@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: str = ""
     google_oauth_redirect_uri: str = "http://localhost:8000/oauth/google/callback"
+    google_maps_api_key: str = ""
 
     gemini_api_key: str = ""
     gemini_model: str = "gemini-1.5-flash"
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
 
     drive_sync_interval_minutes: int = 15
     meeting_sync_max_records: int = 100
+    notes_sync_max_records: int = 100
 
     rag_min_similarity: float = 0.55
     rag_top_k: int = 5

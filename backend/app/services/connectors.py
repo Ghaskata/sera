@@ -10,6 +10,7 @@ GOOGLE_DRIVE = "google_drive"
 GOOGLE_GMAIL = "google_gmail"
 GOOGLE_CALENDAR = "google_calendar"
 GOOGLE_MEET = "google_meet"
+GOOGLE_KEEP = "google_keep"
 
 
 async def get_connector(session: AsyncSession, workspace_id: uuid.UUID, provider: str) -> Connector | None:

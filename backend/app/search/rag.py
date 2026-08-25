@@ -29,25 +29,37 @@ class RagResult:
     sources: list[Source]
 
 
-async def answer_question(session: AsyncSession, workspace_id: uuid.UUID, question: str) -> RagResult:
+async def retrieve_context(
+    session: AsyncSession,
+    workspace_id: uuid.UUID,
+    question: str,
+    *,
+    source_types: set[str] | None = None,
+    top_k: int | None = None,
+) -> list[tuple[Chunk, float]]:
+    """Retrieve relevant chunks from every connected source in one workspace."""
     query_vector = await embed_text(question)
-
     distance = Chunk.embedding.cosine_distance(query_vector)
-    stmt = (
-        select(Chunk, distance.label("distance"))
-        .where(Chunk.workspace_id == workspace_id)
-        .order_by(distance)
-        .limit(settings.rag_top_k)
-    )
+    stmt = select(Chunk, distance.label("distance")).where(Chunk.workspace_id == workspace_id)
+    if source_types:
+        stmt = stmt.where(Chunk.chunk_metadata["source"].as_string().in_(sorted(source_types)))
+    stmt = stmt.order_by(distance).limit(top_k or settings.rag_top_k)
     rows = (await session.execute(stmt)).all()
+    return [(chunk, 1 - dist) for chunk, dist in rows if (1 - dist) >= settings.rag_min_similarity]
 
-    relevant = [(chunk, 1 - dist) for chunk, dist in rows if (1 - dist) >= settings.rag_min_similarity]
 
+async def query_connected_sources(
+    session: AsyncSession,
+    workspace_id: uuid.UUID,
+    question: str,
+    *,
+    source_types: set[str] | None = None,
+) -> RagResult:
+    """Answer a question using Gemini over all permitted connected-source context."""
+    relevant = await retrieve_context(session, workspace_id, question, source_types=source_types)
     if not relevant:
         result = RagResult(answer=NO_CONTEXT_ANSWER, sources=[])
     else:
-        # Keep the LLM context limited to text so existing retrieval behavior is
-        # stable; metadata is exposed separately as auditable citations.
         answer = await generate_answer(question, [chunk.text for chunk, _ in relevant])
         seen = set()
         sources = []
@@ -91,3 +103,19 @@ async def answer_question(session: AsyncSession, workspace_id: uuid.UUID, questi
     )
     await session.commit()
     return result
+
+
+async def answer_question(
+    session: AsyncSession,
+    workspace_id: uuid.UUID,
+    question: str,
+    *,
+    source_types: set[str] | None = None,
+) -> RagResult:
+    """Backward-compatible name for the multi-source Gemini query pipeline."""
+    return await query_connected_sources(
+        session,
+        workspace_id,
+        question,
+        source_types=source_types,
+    )

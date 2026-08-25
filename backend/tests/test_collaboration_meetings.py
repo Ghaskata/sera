@@ -45,3 +45,33 @@ def test_google_meet_transcript_text_and_timestamps_are_normalized():
     assert "Rahul: We will migrate the API." in text
     assert _parse_time("2026-08-25T10:30:00Z").tzinfo == timezone.utc
     assert _parse_graph_datetime("2026-08-25T10:30:00").tzinfo == timezone.utc
+
+
+def test_google_keep_scope_is_read_only():
+    scopes = scopes_for_provider("google_keep")
+    assert "https://www.googleapis.com/auth/keep.readonly" in scopes
+    assert "https://www.googleapis.com/auth/keep" not in scopes
+
+
+def test_google_maps_requires_api_key(monkeypatch):
+    from app.connectors.google_maps.places import GoogleMapsConfigurationError, search_places
+
+    monkeypatch.setattr(settings, "google_maps_api_key", "")
+    import asyncio
+
+    try:
+        asyncio.run(search_places("coffee near me"))
+    except GoogleMapsConfigurationError:
+        pass
+    else:
+        raise AssertionError("Maps search should require GOOGLE_MAPS_API_KEY")
+
+
+def test_catalog_contains_social_foundations():
+    from app.connectors.catalog import CONNECTOR_CATALOG
+
+    providers = {definition.provider: definition for definition in CONNECTOR_CATALOG}
+    for provider in {"discord", "linkedin", "reddit", "twitter_x", "facebook"}:
+        assert providers[provider].status == "catalog_foundation"
+    assert providers["google_maps"].setup_mode == "api_key"
+    assert providers["google_keep"].status == "implemented_foundation"

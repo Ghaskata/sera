@@ -110,3 +110,43 @@ async def test_answer_question_returns_no_context_message_when_nothing_clears_th
     assert result.answer == rag.NO_CONTEXT_ANSWER
     assert result.sources == []
     mock_generate.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_query_connected_sources_can_filter_by_source_label(db_session):
+    workspace_id = uuid.uuid4()
+    document = Document(
+        id=uuid.uuid4(),
+        workspace_id=workspace_id,
+        connector_id=uuid.uuid4(),
+        external_id="slack-message-1",
+        title="#engineering",
+        mime_type="text/plain",
+        updated_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc),
+    )
+    db_session.add(document)
+    db_session.add(
+        Chunk(
+            id=uuid.uuid4(),
+            document_id=document.id,
+            workspace_id=workspace_id,
+            text="Slack says the payment API migration is approved.",
+            embedding=_vector(1.0),
+            chunk_metadata={"title": "#engineering", "source": "Slack"},
+        )
+    )
+    await db_session.commit()
+
+    with (
+        patch.object(rag, "embed_text", new=AsyncMock(return_value=_vector(1.0))),
+        patch.object(rag, "generate_answer", new=AsyncMock(return_value="The migration is approved.")),
+    ):
+        result = await rag.query_connected_sources(
+            db_session,
+            workspace_id,
+            "What did Slack say about the payment API?",
+            source_types={"Slack"},
+        )
+
+    assert result.answer == "The migration is approved."
+    assert result.sources[0].source == "Slack"

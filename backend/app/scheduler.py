@@ -5,6 +5,7 @@ from sqlalchemy import select
 
 from app.config import settings
 from app.connectors.google_drive.sync import run_incremental_sync
+from app.connectors.google_keep.sync import run_keep_sync
 from app.connectors.google_workspace.meet_sync import run_google_meet_sync
 from app.connectors.google_workspace.sync import run_calendar_sync, run_gmail_sync
 from app.connectors.microsoft_teams.sync import run_teams_sync
@@ -35,6 +36,8 @@ async def _sync_all_connected_sources() -> None:
                     await run_calendar_sync(session, connector)
                 elif connector.provider == "google_meet":
                     await run_google_meet_sync(session, connector, settings.meeting_sync_max_records)
+                elif connector.provider == "google_keep":
+                    await run_keep_sync(session, connector, settings.notes_sync_max_records)
                 elif connector.provider == "slack":
                     await run_slack_sync(session, connector)
                 elif connector.provider == "microsoft_teams":

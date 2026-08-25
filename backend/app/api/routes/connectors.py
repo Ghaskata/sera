@@ -14,6 +14,8 @@ def connector_catalog() -> list[dict]:
             "auth_family": definition.auth_family,
             "capabilities": list(definition.capabilities),
             "status": definition.status,
+            "setup_mode": definition.setup_mode,
+            "note": definition.note,
         }
         for definition in CONNECTOR_CATALOG
     ]

@@ -1,11 +1,14 @@
 import logging
 
 from sqlalchemy import select
-from telegram import Update
+
+from app.config import settings
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
 from app.connectors.google_drive.oauth import build_authorization_url
 from app.connectors.google_drive.sync import run_full_sync
+from app.connectors.google_keep.sync import run_keep_sync
 from app.connectors.google_workspace.meet_sync import run_google_meet_sync
 from app.connectors.google_workspace.sync import run_calendar_sync, run_gmail_sync
 from app.connectors.microsoft_teams.oauth import build_microsoft_authorization_url
@@ -21,6 +24,7 @@ from app.services.connectors import (
     GOOGLE_DRIVE,
     GOOGLE_GMAIL,
     GOOGLE_MEET,
+    GOOGLE_KEEP,
     get_or_create_pending_connector,
 )
 from app.services.oauth_state import create_oauth_state
@@ -85,6 +89,14 @@ async def connect_meet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(f"Connect Google Meet meeting history and transcripts:\n{auth_url}")
 
 
+async def connect_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    auth_url = await _google_login_url(update.effective_user, GOOGLE_KEEP)
+    await update.message.reply_text(
+        "Google Notes / Keep requires Workspace administrator-approved access. Continue here:\n"
+        f"{auth_url}"
+    )
+
+
 async def _external_login_url(tg_user, provider: str, builder) -> str:
     async with async_session_factory() as session:
         user, _ = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
@@ -95,7 +107,10 @@ async def _external_login_url(tg_user, provider: str, builder) -> str:
 async def connect_slack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     auth_url = await _external_login_url(update.effective_user, "slack", build_slack_authorization_url)
     await update.message.reply_text(
-        "Connect a Slack workspace with read-only channel history access:\n" f"{auth_url}"
+        "Continue setup in Slack. Sera will request only the configured read-only workspace permissions.",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Continue setup in Slack", url=auth_url)]]
+        ),
     )
 
 
@@ -114,6 +129,45 @@ async def connect_drive(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     # Backwards-compatible command; Google login and Drive consent are combined
     # in the first product slice.
     await login_google(update, context)
+
+
+async def connections_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    tg_user = update.effective_user
+    async with async_session_factory() as session:
+        user, workspace = await get_or_create_user_and_workspace(session, tg_user.id, tg_user.full_name)
+        connectors = (
+            await session.scalars(
+                select(Connector).where(Connector.workspace_id == workspace.id)
+            )
+        ).all()
+    by_provider = {connector.provider: connector for connector in connectors}
+    display_names = {
+        "google_drive": "Google Drive",
+        "google_gmail": "Gmail",
+        "google_calendar": "Google Calendar",
+        "google_meet": "Google Meet",
+        "google_keep": "Google Notes / Keep",
+        "google_maps": "Google Maps / Places API",
+        "slack": "Slack",
+        "microsoft_teams": "Microsoft Teams",
+        "discord": "Discord",
+        "linkedin": "LinkedIn",
+        "reddit": "Reddit",
+        "twitter_x": "X / Twitter",
+        "facebook": "Facebook",
+    }
+    lines = ["Sera connected accounts:"]
+    maps_state = "configured" if settings.google_maps_api_key else "not configured"
+    lines.append(f"• Google Maps / Places API: {maps_state}")
+    for provider, name in display_names.items():
+        connector = by_provider.get(provider)
+        if connector is None:
+            lines.append(f"• {name}: Not connected")
+            continue
+        last_sync = connector.last_sync_at.isoformat(timespec="minutes") if connector.last_sync_at else "not synced yet"
+        lines.append(f"• {name}: {connector.status} · last sync: {last_sync}")
+    lines.append("\nUse /connect_<provider> to add a supported account. Social catalog entries may require provider-specific app review.")
+    await _split_and_send(update, "\n".join(lines))
 
 
 async def insights(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -220,6 +274,8 @@ async def trigger_connector_sync_and_notify(
                 await run_calendar_sync(session, connector)
             elif provider == GOOGLE_MEET:
                 await run_google_meet_sync(session, connector)
+            elif provider == GOOGLE_KEEP:
+                await run_keep_sync(session, connector)
             elif provider == "slack":
                 await run_slack_sync(session, connector)
             elif provider == "microsoft_teams":
