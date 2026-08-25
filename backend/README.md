@@ -50,13 +50,13 @@ Google OAuth requires a public HTTPS callback URI. During local development, run
 uvicorn app.main:app --reload
 ```
 
-The process serves the FastAPI health check and Google, Slack, and Microsoft OAuth callbacks, runs Telegram long polling, and runs the incremental multi-source scheduler. In Telegram, send `/start`, tap the Google sign-in link, approve the requested read-only permissions, and then ask a question. `/login` and `/connect_google` can be used to start the Google flow again; `/connect_drive` remains a compatibility alias. `/connect_gmail`, `/connect_calendar`, `/connect_meet`, and `/connect_notes` request narrower Google provider scopes. `/connect_slack` displays a **Continue setup in Slack** button and installs the Slack app, while `/connect_teams` starts Microsoft identity consent. `/status` or `/connections` reports every supported account and last sync. Calendar events are normalized as meetings, Google Meet conference records and available transcript entries are indexed automatically, Teams calendar meetings are synced with optional transcript retrieval when tenant permissions allow it, and Gmail/Drive/Slack/Teams/Notes chunks are searchable through the same Gemini multi-source RAG pipeline. `/insights` reports detected repeated work, and `/why <action-key>` explains a candidate’s frequency and time metrics.
+The process serves the FastAPI health check, provider OAuth callbacks, and a token-protected `POST /rag/query` endpoint for local/admin RAG testing. It also runs Telegram long polling and the incremental multi-source scheduler. In Telegram, send `/start`, tap the Google sign-in link, approve the requested read-only permissions, and then ask a question. `/login` and `/connect_google` can be used to start the Google flow again; `/connect_drive` remains a compatibility alias. `/connect` opens an interactive inline connector menu. `/connect_gmail`, `/connect_calendar`, `/connect_meet`, and `/connect_notes` request narrower Google provider scopes. `/connect_slack` displays a **Continue setup in Slack** button and installs the Slack app, while `/connect_teams` starts Microsoft identity consent. `/status` or `/connections` reports every supported account and last sync. Calendar events are normalized as meetings, Google Meet conference records and available transcript entries are indexed automatically, Teams calendar meetings are synced with optional transcript retrieval when tenant permissions allow it, and Gmail/Drive/Slack/Teams/Notes chunks are searchable through the same Gemini multi-source RAG pipeline. `/insights` reports detected repeated work, and `/why <action-key>` explains a candidate’s frequency and time metrics.
 
 ## Project layout
 
 ```text
 app/
-  api/routes/               # health and Google OAuth callback
+  api/routes/               # health, OAuth, catalog, and RAG query endpoints
   connectors/catalog.py     # implemented and staged provider capabilities
   connectors/google_drive/  # Google OAuth, Drive sync, extraction
   connectors/google_workspace/ # Gmail, Calendar, and Meet read-only sync
@@ -66,7 +66,8 @@ app/
   connectors/microsoft_teams/ # Microsoft OAuth and Graph meeting sync
   models/                   # users, workspaces, connectors, meetings, documents, chunks, OAuth state
   services/                 # account linking, encrypted tokens, chunking, embeddings, Gemini
-  search/rag.py             # workspace-scoped retrieval and cited answers
+  search/rag.py             # workspace-scoped multi-source retrieval and cited answers
+  scripts/query_rag.py      # dependency-free curl-equivalent Python query client
   telegram_bot/             # onboarding, provider setup, status, and RAG handlers
   scheduler.py              # periodic incremental Google-source sync
 alembic/versions/           # schema migrations
@@ -82,4 +83,4 @@ OAuth state is a cryptographically random, short-lived, one-time value stored se
 pytest -q
 ```
 
-The current suite covers chunking, embedding calls, token refresh persistence, RAG workspace isolation/citation behavior, provider-aware retrieval, OAuth-state expiry, provider-specific scopes, Google workspace parsing, and work-pattern metrics. The schema migrations for Google identity/OAuth states, work intelligence, and normalized meetings are `1f2c3d4e5f6a_google_identity_oauth_state.py`, `2a3b4c5d6e7f_work_intelligence.py`, and `3b4c5d6e7f8a_meetings.py`.
+The current suite covers chunking, embedding calls, token refresh persistence, RAG workspace isolation/citation behavior, provider-aware retrieval, OAuth-state expiry, provider-specific scopes, Google workspace parsing, and work-pattern metrics. For local/admin RAG tests, set `RAG_QUERY_TOKEN` and call `POST /rag/query`; do not expose this testing token to browser clients. The schema migrations for Google identity/OAuth states, work intelligence, and normalized meetings are `1f2c3d4e5f6a_google_identity_oauth_state.py`, `2a3b4c5d6e7f_work_intelligence.py`, and `3b4c5d6e7f8a_meetings.py`.

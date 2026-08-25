@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     meeting_sync_max_records: int = 100
     notes_sync_max_records: int = 100
 
+    rag_query_token: str = ""
     rag_min_similarity: float = 0.55
     rag_top_k: int = 5
 

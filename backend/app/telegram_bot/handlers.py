@@ -147,7 +147,6 @@ async def connections_status(update: Update, context: ContextTypes.DEFAULT_TYPE)
         "google_calendar": "Google Calendar",
         "google_meet": "Google Meet",
         "google_keep": "Google Notes / Keep",
-        "google_maps": "Google Maps / Places API",
         "slack": "Slack",
         "microsoft_teams": "Microsoft Teams",
         "discord": "Discord",
@@ -300,3 +299,96 @@ async def trigger_connector_sync_and_notify(
 # Backwards-compatible names used by existing callback code.
 trigger_google_sync_and_notify = trigger_connector_sync_and_notify
 trigger_sync_and_notify = trigger_connector_sync_and_notify
+
+
+CONNECTOR_BUTTON_NAMES = {
+    "google_drive": "Google Drive",
+    "google_gmail": "Gmail",
+    "google_calendar": "Google Calendar",
+    "google_meet": "Google Meet",
+    "google_keep": "Google Notes / Keep",
+    "google_maps": "Google Maps / Places",
+    "slack": "Slack",
+    "microsoft_teams": "Microsoft Teams",
+    "discord": "Discord",
+    "linkedin": "LinkedIn",
+    "reddit": "Reddit",
+    "twitter_x": "X / Twitter",
+    "facebook": "Facebook",
+}
+
+
+async def connect_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    buttons = []
+    providers = list(CONNECTOR_BUTTON_NAMES)
+    for index in range(0, len(providers), 2):
+        row = []
+        for provider in providers[index : index + 2]:
+            row.append(
+                InlineKeyboardButton(
+                    CONNECTOR_BUTTON_NAMES[provider],
+                    callback_data=f"setup:{provider}",
+                )
+            )
+        buttons.append(row)
+    await update.message.reply_text(
+        "Choose an account or service to connect to Sera:",
+        reply_markup=InlineKeyboardMarkup(buttons),
+    )
+
+
+async def connector_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    provider = (query.data or "").removeprefix("setup:")
+    if provider not in CONNECTOR_BUTTON_NAMES:
+        await query.edit_message_text("That connector is not available.")
+        return
+
+    if provider == "google_maps":
+        configured = "configured" if settings.google_maps_api_key else "not configured"
+        await query.edit_message_text(
+            "Google Maps / Places uses a restricted server-side API key, not user OAuth. "
+            f"Current status: {configured}. Set GOOGLE_MAPS_API_KEY in the backend environment."
+        )
+        return
+
+    if provider in {"discord", "linkedin", "reddit", "twitter_x", "facebook"}:
+        await query.edit_message_text(
+            f"{CONNECTOR_BUTTON_NAMES[provider]} is listed in Sera’s social connector catalog. "
+            "Its provider-specific OAuth app, permissions, and review are not enabled yet; "
+            "no account will be connected from this button."
+        )
+        return
+
+    if provider == "slack":
+        auth_url = await _external_login_url(update.effective_user, "slack", build_slack_authorization_url)
+        await query.edit_message_text(
+            "Continue setup in Slack:",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Continue setup in Slack", url=auth_url)]]
+            ),
+        )
+        return
+
+    if provider == "microsoft_teams":
+        auth_url = await _external_login_url(
+            update.effective_user,
+            "microsoft_teams",
+            build_microsoft_authorization_url,
+        )
+        await query.edit_message_text(
+            "Continue setup in Microsoft Teams:",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Continue setup in Teams", url=auth_url)]]
+            ),
+        )
+        return
+
+    auth_url = await _google_login_url(update.effective_user, provider)
+    await query.edit_message_text(
+        f"Continue setup for {CONNECTOR_BUTTON_NAMES[provider]}:",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Continue with Google", url=auth_url)]]
+        ),
+    )
